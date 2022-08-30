@@ -12,9 +12,13 @@ Created on 2022-08-28
 
 from json import load
 
+from bfsa.utils.get_vault_secret import get_vault_secret
+
 
 with open("credentials/blob_config.json", "r") as credentials_file:
-    credentials = load(credentials_file)
+    blob_credentials = load(credentials_file)
+
+blob_credentials["credentials"] = get_vault_secret("bennettfamilyblobs-credentials")
 
 
 if __name__ == "__main__":

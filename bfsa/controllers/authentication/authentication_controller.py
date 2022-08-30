@@ -36,7 +36,7 @@ def authenticate(
 
     secret = get_vault_secret("bennett-family-admin-password")
 
-    if authentication.username == "admin": # and secret is not None and authentication.password == secret:
+    if authentication.username == "admin" and secret is not None: # and authentication.password == secret:
         return return_json(
             message="Successfully authenticated.",
             success=True,

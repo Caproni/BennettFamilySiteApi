@@ -12,7 +12,7 @@ from fastapi import APIRouter, UploadFile, File
 
 from bfsa.db.environment import Environment
 from bfsa.db.client import Client
-from bfsa.controllers.environment import credentials
+from bfsa.controllers.environment import blob_credentials
 from bfsa.blob.blob_service_client import upload_blob, delete_blob, read_blobs
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
@@ -81,7 +81,7 @@ def create_photo(
 
     try:
         blob_url = upload_blob(
-            connection=credentials["credentials"],
+            connection=blob_credentials["credentials"],
             container="photos",
             id=id,
             file=image,
@@ -294,7 +294,7 @@ def delete_photo(
             )
 
         blob_success = delete_blob(
-            connection=credentials["credentials"],
+            connection=blob_credentials["credentials"],
             container="photos",
             unique_name="",
         )
