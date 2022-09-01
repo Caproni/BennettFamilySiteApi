@@ -24,7 +24,7 @@ def get_vault_secret(
 
     try:
         client = SecretClient(
-            vault_url="https://bennett-family-vault.vault.azure.net",
+            vault_url="https://family-key-vault.vault.azure.net",
             credential=DefaultAzureCredential(),
         )
         return client.get_secret(secret_name).value
