@@ -34,7 +34,7 @@ def create_photo(
     description: Optional[str] = None,
     camera_details: Optional[str] = None,
     taken_by: Optional[str] = None,
-    taken_date: Optional[datetime] = None,
+    taken_date: Optional[str] = None,
 ):
     """
     Add photo object to database
