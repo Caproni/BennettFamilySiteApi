@@ -12,7 +12,7 @@ from fastapi import APIRouter, UploadFile, File
 
 from bfsa.db.environment import Environment
 from bfsa.db.client import Client, get_blob_credentials
-from bfsa.controllers.environment import Environment
+from bfsa.controllers.environment import Environment as Base
 from bfsa.blob.blob_service_client import upload_blob, delete_blob, read_blobs
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
@@ -22,7 +22,7 @@ from bfsa.utils.logger import logger as log
 
 router = APIRouter()
 
-environment = Environment()
+environment = Base()
 
 
 @router.post("/api/createPhoto")
