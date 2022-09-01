@@ -9,9 +9,12 @@ Created on 2022-07-17
 from typing import Dict
 from json import load
 
+from bfsa.controllers.environment import Environment as BaseEnvironment
 from bfsa.utils.get_vault_secret import get_vault_secret
 from bfsa.utils.logger import logger as log
 
+
+base = BaseEnvironment()
 
 class Environment:
     PATH_TO_CONFIG = "credentials/db_config.json"
@@ -21,7 +24,10 @@ class Environment:
         log.info("Calling load_db_credentials")
         with open(Environment.PATH_TO_CONFIG, "r") as config_file:
             db_config = load(config_file)
-            db_config["key"] = get_vault_secret("bennett-family-cosmos-connection-string")
+            db_config["key"] = get_vault_secret(
+                "bennett-family-cosmos-connection-string",
+                production=base["IS_PROD"],
+            )
             return db_config
 
 

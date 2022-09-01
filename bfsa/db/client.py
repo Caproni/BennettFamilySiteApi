@@ -7,7 +7,25 @@ Created on 2022-06-26
 """
 
 from typing import List, Dict, Any, Union
+from json import load
 from azure.cosmos import CosmosClient, PartitionKey
+
+from bfsa.controllers.environment import Environment
+from bfsa.utils.get_vault_secret import get_vault_secret
+
+
+environment = Environment()
+
+
+def get_blob_credentials():
+    with open("credentials/blob_config.json", "r") as credentials_file:
+        blob_credentials = load(credentials_file)
+
+    blob_credentials["credentials"] = get_vault_secret(
+        "bennettfamilyblobs-credentials",
+        production=environment["IS_PROD"],
+    )
+    return blob_credentials
 
 
 class Client:

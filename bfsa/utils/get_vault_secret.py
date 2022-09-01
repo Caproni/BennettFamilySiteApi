@@ -8,7 +8,6 @@ Created on 2022-08-20
 
 from typing import Optional
 from os import environ
-from dotenv import load_dotenv
 from azure.keyvault.secrets import SecretClient
 from azure.identity import DefaultAzureCredential
 
@@ -17,12 +16,11 @@ from bfsa.utils.logger import logger as log
 
 def get_vault_secret(
     secret_name: str,
-    production: bool = True,
+    production: bool,
 ) -> Optional[str]:
 
     if not production:
-        load_dotenv()
-        return environ["AZURE_BLOB_CONNECTION_STRING"]
+        return environ[secret_name.upper()]
 
     try:
         client = SecretClient(

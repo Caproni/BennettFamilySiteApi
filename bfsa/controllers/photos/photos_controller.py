@@ -11,8 +11,8 @@ from datetime import datetime
 from fastapi import APIRouter, UploadFile, File
 
 from bfsa.db.environment import Environment
-from bfsa.db.client import Client
-from bfsa.controllers.environment import blob_credentials
+from bfsa.db.client import Client, get_blob_credentials
+from bfsa.controllers.environment import Environment
 from bfsa.blob.blob_service_client import upload_blob, delete_blob, read_blobs
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
@@ -21,6 +21,8 @@ from bfsa.utils.logger import logger as log
 
 
 router = APIRouter()
+
+environment = Environment()
 
 
 @router.post("/api/createPhoto")
@@ -78,6 +80,8 @@ def create_photo(
     # insert data - blob first then metadata
 
     id = create_guid()
+
+    blob_credentials = get_blob_credentials(environment["IS_PROD"])
 
     try:
         blob_url = upload_blob(
@@ -280,6 +284,8 @@ def delete_photo(
             message="Error connecting to database.",
             success=False,
         )
+
+    blob_credentials = get_blob_credentials(environment["IS_PROD"])
 
     try:
         success = client.delete_data(

@@ -9,6 +9,7 @@ Created on 2022-08-21
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from bfsa.controllers.environment import Environment
 from bfsa.utils.get_vault_secret import get_vault_secret
 from bfsa.utils.return_json import return_json
 from bfsa.utils.logger import logger as log
@@ -34,7 +35,12 @@ def authenticate(
     """
     log.info("Calling authenticate")
 
-    secret = get_vault_secret("bennett-family-admin-password")
+    environment = Environment()
+
+    secret = get_vault_secret(
+        "bennett-family-admin-password",
+        production=environment["IS_PROD"],
+    )
 
     if authentication.username == "admin" and secret is not None: # and authentication.password == secret:
         return return_json(

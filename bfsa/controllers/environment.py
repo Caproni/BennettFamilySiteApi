@@ -10,15 +10,33 @@ Created on 2022-08-28
 @email: edmund.bennett@ghd.com
 """
 
-from json import load
+from typing import Union
+from os import getenv
 
-from bfsa.utils.get_vault_secret import get_vault_secret
 
+class Environment:
+    IS_PROD = "IS_PROD"
 
-with open("credentials/blob_config.json", "r") as credentials_file:
-    blob_credentials = load(credentials_file)
+    _environment = {}
 
-blob_credentials["credentials"] = get_vault_secret("bennettfamilyblobs-credentials")
+    def __init__(self):
+        self._environment[Environment.IS_PROD] = (
+            True if getenv(Environment.IS_PROD) == "1" else False
+        )
+
+    def __getitem__(self, key: str) -> Union[bool, str]:
+        try:
+            return self._environment[key]
+        except KeyError as _:
+            raise EnvironmentError(f"{key} is an unsupported environment variable")
+
+    def __str__(self) -> str:
+        res = "Environment:\n"
+        for key, value in self._environment:
+            res += f"{key}: {value}\n"
+
+        return res
+
 
 
 if __name__ == "__main__":
