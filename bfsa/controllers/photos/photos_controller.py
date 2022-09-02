@@ -81,7 +81,7 @@ def create_photo(
 
     id = create_guid()
 
-    blob_credentials = get_blob_credentials(environment["IS_PROD"])
+    blob_credentials = get_blob_credentials()
 
     try:
         blob_url = upload_blob(
@@ -285,7 +285,7 @@ def delete_photo(
             success=False,
         )
 
-    blob_credentials = get_blob_credentials(environment["IS_PROD"])
+    blob_credentials = get_blob_credentials()
 
     try:
         success = client.delete_data(
