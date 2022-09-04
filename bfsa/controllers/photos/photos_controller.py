@@ -7,13 +7,12 @@ Created on 2022-07-16
 """
 
 from typing import Dict, Any, Optional
-from datetime import datetime
 from fastapi import APIRouter, UploadFile, File
 
 from bfsa.db.environment import Environment
 from bfsa.db.client import Client, get_blob_credentials
 from bfsa.controllers.environment import Environment as Base
-from bfsa.blob.blob_service_client import upload_blob, delete_blob, read_blobs
+from bfsa.blob.blob_service_client import upload_blob, delete_blob
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
 from bfsa.utils.create_guid import create_guid
@@ -79,7 +78,7 @@ def create_photo(
 
     # insert data - blob first then metadata
 
-    id = create_guid()
+    guid = create_guid()
 
     blob_credentials = get_blob_credentials()
 
@@ -87,7 +86,7 @@ def create_photo(
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
             container="photos",
-            id=id,
+            id=guid,
             file=image,
             overwrite=False,
         )
@@ -135,7 +134,7 @@ def create_photo(
 
     try:
         response = delete_photo(
-            photo_id=id,
+            photo_id=guid,
         )
         # TODO: indicate whether roll back was successful
         return return_json(
@@ -148,7 +147,6 @@ def create_photo(
             message="Failed to insert photo.",
             success=False,
         )
-
 
 
 @router.get("/api/readPhotos")

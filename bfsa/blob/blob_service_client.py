@@ -1,13 +1,9 @@
 #!
 # -*- coding: utf-8 -*-
 """
-╔═╗╦ ╦╔╦╗  ╔╦╗┬┌─┐┬┌┬┐┌─┐┬
-║ ╦╠═╣ ║║   ║║││ ┬│ │ ├─┤│
-╚═╝╩ ╩═╩╝  ═╩╝┴└─┘┴ ┴ ┴ ┴┴─┘
-
 Created on 2022-08-28
 @author: Edmund Bennett
-@email: edmund.bennett@ghd.com
+@email: bennettedmund@gmail.com
 """
 
 from typing import List, Optional
@@ -45,27 +41,6 @@ def upload_blob(
         return response.url
     except Exception as e:
         log.critical(f"Failed to insert blob into storage. Error: {e}")
-        return None
-
-
-def read_blobs(
-    connection: str,
-    container: str,
-    query: str,
-) -> Optional[List[bytes]]:
-    log.info("Calling read_blobs")
-
-    try:
-        blob_service_client = BlobServiceClient.from_connection_string(connection)
-        client = blob_service_client.get_container_client(
-            container=container,
-        )
-        client.get_container_properties()  # get properties of the container to force exception to be thrown if container does not exist
-        return client.select_data(
-            query,
-        )
-    except Exception as e:
-        log.critical(f"Failed to select blobs from storage. Error: {e}")
         return None
 
 

@@ -1,13 +1,9 @@
 #!
 # -*- coding: utf-8 -*-
 """
-╔═╗╦ ╦╔╦╗  ╔╦╗┬┌─┐┬┌┬┐┌─┐┬
-║ ╦╠═╣ ║║   ║║││ ┬│ │ ├─┤│
-╚═╝╩ ╩═╩╝  ═╩╝┴└─┘┴ ┴ ┴ ┴┴─┘
-
 Created on 2022-08-28
 @author: Edmund Bennett
-@email: edmund.bennett@ghd.com
+@email: bennettedmund@gmail.com
 """
 
 from typing import Union
