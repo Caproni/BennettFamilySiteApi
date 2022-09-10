@@ -369,6 +369,10 @@ def delete_recipe(
             success=False,
         )
 
+    response = delete_recipe_image(
+        recipe_id=recipe_id,
+    )
+
     try:
         success = client.delete_data(
             item=recipe_id,
