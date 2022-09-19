@@ -89,7 +89,6 @@ def read_recipe_details(
                 ingredients = client.select_data(
                     query=create_select(
                         {
-                            "recipe_id": recipe_id,
                             "partitionKey": "ingredients",
                         }
                     ),
@@ -112,7 +111,6 @@ def read_recipe_details(
                 equipment = client.select_data(
                     query=create_select(
                         {
-                            "recipe_id": recipe_id,
                             "partitionKey": "equipment",
                         }
                     ),
@@ -128,6 +126,56 @@ def read_recipe_details(
                     message="Failed to select equipment data.",
                     success=False,
                 )
+
+            ingredient_usages, equipment_usages = [], []
+            for recipe_step in recipe_steps:
+
+                # for each step get ingredient usages
+
+                try:
+                    ingredient_usage = client.select_data(
+                        query=create_select(
+                            {
+                                "recipe_step_id": recipe_step["id"],
+                                "partitionKey": "ingredient-usage",
+                            }
+                        ),
+                    )
+
+                    if ingredient_usage:
+                        ingredient_usages += ingredient_usage
+
+                except Exception as e:
+                    log.critical(f"Failed to select ingredient usage data. Error: {e}")
+                    return return_json(
+                        message="Failed to select ingredient usage data.",
+                        success=False,
+                    )
+
+                # for each step get equipment usage
+
+                try:
+                    equipment_usage = client.select_data(
+                        query=create_select(
+                            {
+                                "recipe_step_id": recipe_step["id"],
+                                "partitionKey": "equipment-usage",
+                            }
+                        ),
+                    )
+
+                    if equipment_usage:
+                        equipment_usages =+ equipment_usage
+
+                except Exception as e:
+                    log.critical(f"Failed to select equipment usage data. Error: {e}")
+                    return return_json(
+                        message="Failed to select equipment usage data.",
+                        success=False,
+                    )
+
+            data.update({"ingredient_usage": ingredient_usages})
+            data.update({"equipment_usage": equipment_usages})
 
         else:
             log.critical(f"Failed to select recipe data. Check logs for details.")

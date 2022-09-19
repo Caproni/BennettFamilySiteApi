@@ -21,25 +21,23 @@ from bfsa.utils.logger import logger as log
 router = APIRouter()
 
 
-class IngredientUsageModel(BaseModel):
+class EquipmentUsageModel(BaseModel):
     """
-    Pydantic model for ingredient usage
+    Pydantic model for equipment usage
     """
-    recipe_step_id: str
-    ingredient_id: str
-    quantity: float
-    quantity_units: str
+    recipe_id: str
+    equipment_id: str
     notes: str
 
 
-@router.post("/api/createIngredientUsage")
-def create_ingredient_usage(
-    ingredient_usage: IngredientUsageModel,
+@router.post("/api/createEquipmentUsage")
+def create_equipment_usage(
+    equipment_usage: EquipmentUsageModel,
 ):
     """
-    Add ingredient usage object to database
+    Add equipment usage object to database
     """
-    log.info("Calling create_ingredient_usage")
+    log.info("Calling create_equipment_usage")
 
     db_config = Environment.load_db_credentials()
 
@@ -57,41 +55,41 @@ def create_ingredient_usage(
             success=False,
         )
 
-    ingredient_usage_dict = dict(ingredient_usage)
-    ingredient_usage_dict.update({"id": create_guid()})
-    ingredient_usage_dict.update({"partitionKey": "ingredient-usage"})
+    equipment_usage_dict = dict(equipment_usage)
+    equipment_usage_dict.update({"id": create_guid()})
+    equipment_usage_dict.update({"partitionKey": "equipment-usage"})
 
     try:
         success = client.insert_data(
-            [ingredient_usage_dict],
+            [equipment_usage_dict],
         )
         if not success:
-            log.critical(f"Failed to insert ingredient usage. Check logs for details.")
+            log.critical(f"Failed to insert equipment usage. Check logs for details.")
             return return_json(
-                message="Failed to insert ingredient usage.",
+                message="Failed to insert equipment usage.",
                 success=False,
             )
     except Exception as e:
-        log.critical(f"Failed to insert ingredient usage. Error: {e}")
+        log.critical(f"Failed to insert equipment usage. Error: {e}")
         return return_json(
-            message="Failed to insert ingredient usage.",
+            message="Failed to insert equipment usage.",
             success=False,
         )
 
     return return_json(
-        message="Successfully inserted ingredient usage.",
+        message="Successfully inserted equipment usage.",
         success=True,
     )
 
 
-@router.get("/api/readIngredientUsages")
-def read_ingredient_usages(
+@router.get("/api/readEquipmentUsages")
+def read_equipment_usages(
     where: Dict[str, Any] = None,
 ):
     """
-    Read ingredient usages
+    Read equipment usages
     """
-    log.info("Calling read_ingredient_usages")
+    log.info("Calling read_equipment_usages")
 
     db_config = Environment.load_db_credentials()
 
@@ -111,7 +109,7 @@ def read_ingredient_usages(
 
     if where is None:
         where = {}
-    where.update({"partitionKey": "ingredient-usage"})
+    where.update({"partitionKey": "equipment-usage"})
 
     query = create_select(where)
 
@@ -121,33 +119,33 @@ def read_ingredient_usages(
         )
         if data:
             return return_json(
-                message="Successfully selected ingredient usage data.",
+                message="Successfully selected equipment usage data.",
                 success=True,
                 content=data,
             )
     except Exception as e:
-        log.critical(f"Failed to select ingredient usage data. Error: {e}")
+        log.critical(f"Failed to select equipment usage data. Error: {e}")
         return return_json(
-            message="Failed to select ingredient usage data.",
+            message="Failed to select equipment usage data.",
             success=False,
         )
 
-    log.critical(f"Failed to select ingredient usage data. Check logs for details.")
+    log.critical(f"Failed to select equipment usage data. Check logs for details.")
     return return_json(
-        message="Failed to select ingredient usage data.",
+        message="Failed to select equipment usage data.",
         success=False,
     )
 
 
-@router.patch("/api/updateIngredientUsage")
-def update_ingredient_usage(
-    ingredient_usage_id: str,
+@router.patch("/api/updateEquipmentUsage")
+def update_equipment_usage(
+    equipment_usage_id: str,
     patch: Dict[str, Any],
 ):
     """
-    Update ingredient usage
+    Update equipment usage
     """
-    log.info("Calling update_ingredient_usage")
+    log.info("Calling update_equipment_usage")
 
     db_config = Environment.load_db_credentials()
 
@@ -165,42 +163,42 @@ def update_ingredient_usage(
             success=False,
         )
 
-    patch.update({"id": ingredient_usage_id})
-    patch.update({"partitionKey": "ingredient-usage"})
+    patch.update({"id": equipment_usage_id})
+    patch.update({"partitionKey": "equipment-usage"})
 
     try:
         success = client.update_data(
-            item={"id": ingredient_usage_id, "partitionKey": "ingredient-usage"},
+            item={"id": equipment_usage_id, "partitionKey": "equipment-usage"},
             body=patch,
             upsert=False,
         )
         if not success:
-            log.critical(f"Failed to update ingredient usage. Check logs for details.")
+            log.critical(f"Failed to update equipment usage. Check logs for details.")
             return return_json(
-                message="Failed to update ingredient usage.",
+                message="Failed to update equipment usage.",
                 success=False,
             )
     except Exception as e:
-        log.critical(f"Failed to update ingredient usage. Error: {e}")
+        log.critical(f"Failed to update equipment usage. Error: {e}")
         return return_json(
-            message="Failed to update ingredient usage.",
+            message="Failed to update equipment usage.",
             success=False,
         )
 
     return return_json(
-        message="Successfully updated ingredient usage.",
+        message="Successfully updated equipment usage.",
         success=True,
     )
 
 
-@router.delete("/api/deleteIngredientUsage")
-def delete_ingredient_usage(
-    ingredient_usage_id: str,
+@router.delete("/api/deleteEquipmentUsage")
+def delete_equipment_usage(
+    equipment_usage_id: str,
 ):
     """
-    Delete ingredient usage
+    Delete equipment usage
     """
-    log.info("Calling delete_ingredient_usage")
+    log.info("Calling delete_equipment_usage")
 
     db_config = Environment.load_db_credentials()
 
@@ -220,23 +218,23 @@ def delete_ingredient_usage(
 
     try:
         success = client.delete_data(
-            item=ingredient_usage_id,
-            partition_key="ingredient-usage",
+            item=equipment_usage_id,
+            partition_key="equipment-usage",
         )
         if not success:
-            log.critical(f"Failed to delete ingredient usage. Check logs for details.")
+            log.critical(f"Failed to delete equipment usage. Check logs for details.")
             return return_json(
-                message="Failed to delete ingredient usage.",
+                message="Failed to delete equipment usage.",
                 success=False,
             )
     except Exception as e:
-        log.critical(f"Failed to delete ingredient usage. Error: {e}")
+        log.critical(f"Failed to delete equipment usage. Error: {e}")
         return return_json(
-            message="Failed to delete ingredient usage.",
+            message="Failed to delete equipment usage.",
             success=False,
         )
 
     return return_json(
-        message="Successfully deleted ingredient usage.",
+        message="Successfully deleted equipment usage.",
         success=True,
     )

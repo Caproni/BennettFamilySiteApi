@@ -6,7 +6,7 @@ Created on 2022-08-28
 @email: bennettedmund@gmail.com
 """
 
-from typing import List, Optional
+from typing import Optional
 from azure.storage.blob import BlobServiceClient
 from fastapi import UploadFile
 

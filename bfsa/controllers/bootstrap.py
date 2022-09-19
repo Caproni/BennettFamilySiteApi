@@ -24,6 +24,7 @@ from bfsa.controllers.recipes import (
     ingredient_controller,
     ingredient_usage_controller,
     equipment_controller,
+    equipment_usage_controller,
     recipe_detail_controller,
 )
 
@@ -49,6 +50,7 @@ server.include_router(recipe_step_controller.router)
 server.include_router(ingredient_controller.router)
 server.include_router(ingredient_usage_controller.router)
 server.include_router(equipment_controller.router)
+server.include_router(equipment_usage_controller.router)
 server.include_router(recipe_detail_controller.router)
 
 origins = [
