@@ -98,7 +98,6 @@ def create_photo(
             success=False,
         )
 
-
     photo_dict = {
         "name": name,
         "description": description,
@@ -108,7 +107,7 @@ def create_photo(
         "taken_by": taken_by,
         "taken_date": taken_date,
         "blob_url": blob_url,
-        "id": id,
+        "id": guid,
         "partitionKey": "photo",
     }
 
@@ -300,7 +299,7 @@ def delete_photo(
         blob_success = delete_blob(
             connection=blob_credentials["credentials"],
             container="photos",
-            unique_name="",
+            url="",
         )
 
     except Exception as e:

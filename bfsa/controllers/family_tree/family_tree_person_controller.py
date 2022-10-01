@@ -97,6 +97,7 @@ def create_family_tree_person(
         success=True,
     )
 
+
 @router.put("/api/putFamilyTreePersonImage")
 def put_family_tree_person_image(
     family_tree_person_id: str,

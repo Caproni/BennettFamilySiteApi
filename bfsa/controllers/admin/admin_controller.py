@@ -32,17 +32,16 @@ def update_many_media(
     except Exception as e:
         log.critical(f"Error calling read_media. Error: {e}")
 
-
     for i, medium in enumerate(media["content"]):
-        id = medium["id"]
+        guid = medium["id"]
         medium.update(patch)
         try:
             media_controller.update_media(
-                id,
+                guid,
                 medium,
             )
         except Exception as e:
-            log.error(f"Error calling update_media on media with id: {id} and index: {i}. Error: {e}")
+            log.error(f"Error calling update_media on media with id: {guid} and index: {i}. Error: {e}")
 
     return return_json(
         message="Successfully updated multiple media documents.",

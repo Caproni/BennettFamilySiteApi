@@ -6,7 +6,7 @@ Created on 2022-07-16
 @email: bennettedmund@gmail.com
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
 

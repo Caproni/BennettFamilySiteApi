@@ -16,6 +16,7 @@ from bfsa.utils.logger import logger as log
 
 base = BaseEnvironment()
 
+
 class Environment:
     PATH_TO_CONFIG = "credentials/db_config.json"
 

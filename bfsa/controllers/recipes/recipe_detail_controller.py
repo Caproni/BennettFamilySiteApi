@@ -165,7 +165,7 @@ def read_recipe_details(
                     )
 
                     if equipment_usage:
-                        equipment_usages =+ equipment_usage
+                        equipment_usages += equipment_usage
 
                 except Exception as e:
                     log.critical(f"Failed to select equipment usage data. Error: {e}")

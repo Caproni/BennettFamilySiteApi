@@ -15,8 +15,8 @@ from bfsa.utils.logger import logger as log
 
 class DatetimeParser:
 
-    __file_contents_pre__ = "([a-zA-Z\s\-_.0-9]+?)"
-    __file_contents_post__ = "([a-zA-Z\s\-_.0-9]+)?"
+    __file_contents_pre__ = "([a-zA-Z\\s\\-_.0-9]+?)"
+    __file_contents_post__ = "([a-zA-Z\\s\\-_.0-9]+)?"
 
     __sep__ = "([-\\.\\/\\\\s:]?)"
     __day__ = "(0?[1-9](?![0-9]{1,})|[1-2][0-9](?![0-9]{1,})|3[0-1](?![0-9]+))"
