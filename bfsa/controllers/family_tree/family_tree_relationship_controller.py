@@ -6,10 +6,9 @@ Created on 2022-08-08
 @email: bennettedmund@gmail.com
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
-from datetime import date
 
 from bfsa.db.environment import Environment
 from bfsa.db.client import Client
@@ -28,9 +27,10 @@ class FamilyTreeRelationshipModel(BaseModel):
     """
     person_one: str
     person_two: str
-    start_time: date
-    end_time: date
-    narrative: str
+    relationship_type: str
+    start_date: Optional[str]
+    end_date: Optional[str]
+    narrative: Optional[str]
 
 
 @router.post("/api/createFamilyTreeRelationship")

@@ -17,7 +17,7 @@ def upload_blob(
     connection: str,
     container: str,
     file: UploadFile,
-    id: str,
+    guid: str,
     overwrite: bool = False,
 ) -> Optional[str]:
     log.info("Calling upload_blob")
@@ -33,7 +33,7 @@ def upload_blob(
         client.get_container_properties()  # get properties of the container to force exception to be thrown if container does not exist
 
         response = client.upload_blob(
-            f"{id}.{file.filename.split('.')[-1]}",
+            f"{guid}.{file.filename.split('.')[-1]}",
             file.file,
             overwrite=overwrite,
         )

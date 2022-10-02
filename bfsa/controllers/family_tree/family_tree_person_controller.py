@@ -152,7 +152,7 @@ def put_family_tree_person_image(
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
             container="family-tree-photos",
-            id=family_tree_person_id,
+            guid=family_tree_person_id,
             file=image,
             overwrite=True,
         )

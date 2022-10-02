@@ -136,7 +136,7 @@ def put_equipment_image(
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
             container="recipe-photos",
-            id=equipment_id,
+            guid=equipment_id,
             file=image,
             overwrite=True,
         )

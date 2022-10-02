@@ -86,7 +86,7 @@ def create_photo(
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
             container="photos",
-            id=guid,
+            guid=guid,
             file=image,
             overwrite=False,
         )

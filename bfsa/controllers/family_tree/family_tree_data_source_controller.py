@@ -9,7 +9,6 @@ Created on 2022-08-08
 from typing import Dict, Any
 from fastapi import APIRouter
 from pydantic import BaseModel
-from datetime import date
 
 from bfsa.db.environment import Environment
 from bfsa.db.client import Client
@@ -29,7 +28,7 @@ class FamilyTreeDataSourceModel(BaseModel):
     name: str
     description: str
     url: str
-    source_date: date
+    source_date: str
 
 
 @router.post("/api/createFamilyTreeDataSource")
