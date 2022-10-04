@@ -9,7 +9,7 @@ Created on 2022-07-16
 from typing import Dict, Any
 from fastapi import APIRouter
 
-from bfsa.controllers.media import media_controller
+from bfsa.controllers.content import media_controller
 from bfsa.utils.return_json import return_json
 from bfsa.utils.logger import logger as log
 
@@ -23,7 +23,7 @@ def update_many_media(
     patch: Dict[str, Any],
 ):
     """
-    Update many media
+    Update many content
     """
     log.info("Calling update_many_media")
     media = None
@@ -41,9 +41,9 @@ def update_many_media(
                 medium,
             )
         except Exception as e:
-            log.error(f"Error calling update_media on media with id: {guid} and index: {i}. Error: {e}")
+            log.error(f"Error calling update_media on content with id: {guid} and index: {i}. Error: {e}")
 
     return return_json(
-        message="Successfully updated multiple media documents.",
+        message="Successfully updated multiple content documents.",
         success=True,
     )

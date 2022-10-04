@@ -29,7 +29,8 @@ def create_photo(
     name: str,
     height: float,
     width: float,
-    image: UploadFile = File(...),
+    file_format: str,
+    file: UploadFile = File(...),
     description: Optional[str] = None,
     camera_details: Optional[str] = None,
     taken_by: Optional[str] = None,
@@ -42,16 +43,16 @@ def create_photo(
 
     # check inputs
 
-    if image.filename == "":
+    if file.filename == "":
         return return_json(
             "No file selected for uploading.",
             success=False,
         )
 
     if (
-        image
-        and "." in image.filename
-        and image.filename.rsplit(".", 1)[1].lower() not in ["png", "bmp", "jpg", "jpeg"]
+        file
+        and "." in file.filename
+        and file.filename.rsplit(".", 1)[1].lower() not in ["png", "bmp", "jpg", "jpeg"]
     ):
         return return_json(
             "Invalid image file.",
@@ -85,9 +86,9 @@ def create_photo(
     try:
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
-            container="photos",
+            container="media",
             guid=guid,
-            file=image,
+            file=file,
             overwrite=False,
         )
 
@@ -101,6 +102,7 @@ def create_photo(
     photo_dict = {
         "name": name,
         "description": description,
+        "file_format": file_format,
         "height": height,
         "width": width,
         "camera_details": camera_details,
@@ -298,7 +300,7 @@ def delete_photo(
 
         blob_success = delete_blob(
             connection=blob_credentials["credentials"],
-            container="photos",
+            container="media",
             url="",
         )
 

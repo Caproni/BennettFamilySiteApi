@@ -16,8 +16,8 @@ from bfsa.controllers.family_tree import (
     family_tree_relationship_controller,
     family_tree_data_source_controller,
 )
-from bfsa.controllers.media import media_controller
-from bfsa.controllers.photos import photos_controller
+from bfsa.controllers.content import media_controller
+from bfsa.controllers.media import photos_controller
 from bfsa.controllers.recipes import (
     recipe_controller,
     recipe_step_controller,

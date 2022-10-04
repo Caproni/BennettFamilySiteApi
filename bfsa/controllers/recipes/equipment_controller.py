@@ -135,7 +135,7 @@ def put_equipment_image(
     try:
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
-            container="recipe-photos",
+            container="recipe-media",
             guid=equipment_id,
             file=image,
             overwrite=True,
@@ -212,7 +212,7 @@ def delete_equipment_image(
     try:
         success = delete_blob(
             connection=blob_credentials["credentials"],
-            container="recipe-photos",
+            container="recipe-media",
             url="",
         )
 

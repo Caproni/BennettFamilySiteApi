@@ -151,7 +151,7 @@ def put_family_tree_person_image(
     try:
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
-            container="family-tree-photos",
+            container="family-tree-media",
             guid=family_tree_person_id,
             file=image,
             overwrite=True,
@@ -228,7 +228,7 @@ def delete_family_tree_person_image(
     try:
         success = delete_blob(
             connection=blob_credentials["credentials"],
-            container="family-tree-photos",
+            container="family-tree-media",
             url="",
         )
 
