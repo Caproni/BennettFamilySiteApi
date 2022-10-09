@@ -135,7 +135,7 @@ def put_equipment_image(
     try:
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
-            container="recipe-media",
+            container="recipe-content",
             guid=equipment_id,
             file=image,
             overwrite=True,
@@ -151,7 +151,7 @@ def put_equipment_image(
     response = read_equipment(where={"id": equipment_id})
 
     if response["success"]:
-        content = response["content"]
+        content = response["media"]
         if content:
             equipment_dict = content[0]
             if "blob_url" in equipment_dict.keys() and equipment_dict["blob_url"] == blob_url:
@@ -212,7 +212,7 @@ def delete_equipment_image(
     try:
         success = delete_blob(
             connection=blob_credentials["credentials"],
-            container="recipe-media",
+            container="recipe-content",
             url="",
         )
 

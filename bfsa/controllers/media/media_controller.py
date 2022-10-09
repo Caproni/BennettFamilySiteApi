@@ -21,9 +21,9 @@ from bfsa.utils.logger import logger as log
 router = APIRouter()
 
 
-class ContentModel(BaseModel):
+class MediaModel(BaseModel):
     """
-    Pydantic model for content
+    Pydantic model for media
     """
     director: Optional[str]
     title: str
@@ -41,10 +41,10 @@ class ContentModel(BaseModel):
 
 @router.post("/api/createMedia")
 def create_media(
-    media: ContentModel,
+    media: MediaModel,
 ):
     """
-    Add content object to database
+    Add media object to database
     """
     log.info("Calling create_media")
 
@@ -66,27 +66,27 @@ def create_media(
 
     media_dict = dict(media)
     media_dict.update({"id": create_guid()})
-    media_dict.update({"partitionKey": "content"})
+    media_dict.update({"partitionKey": "media"})
 
     try:
         success = client.insert_data(
             [media_dict],
         )
         if not success:
-            log.critical(f"Failed to insert content. Check logs for details.")
+            log.critical(f"Failed to insert media. Check logs for details.")
             return return_json(
-                message="Failed to insert content.",
+                message="Failed to insert media.",
                 success=False,
             )
     except Exception as e:
-        log.critical(f"Failed to insert content. Error: {e}")
+        log.critical(f"Failed to insert media. Error: {e}")
         return return_json(
-            message="Failed to insert content.",
+            message="Failed to insert media.",
             success=False,
         )
 
     return return_json(
-        message="Successfully inserted content.",
+        message="Successfully inserted media.",
         success=True,
     )
 
@@ -96,7 +96,7 @@ def read_media(
     where: Dict[str, Any] = None,
 ):
     """
-    Read content
+    Read media
     """
     log.info("Calling read_media")
 
@@ -118,7 +118,7 @@ def read_media(
 
     if where is None:
         where = {}
-    where.update({"partitionKey": "content"})
+    where.update({"partitionKey": "media"})
 
     query = create_select(where)
 
@@ -128,20 +128,20 @@ def read_media(
         )
         if data:
             return return_json(
-                message="Successfully selected content data.",
+                message="Successfully selected media data.",
                 success=True,
                 content=data,
             )
     except Exception as e:
-        log.critical(f"Failed to select content data. Error: {e}")
+        log.critical(f"Failed to select media data. Error: {e}")
         return return_json(
-            message="Failed to select content data.",
+            message="Failed to select media data.",
             success=False,
         )
 
-    log.critical(f"Failed to select content data. Check logs for details.")
+    log.critical(f"Failed to select media data. Check logs for details.")
     return return_json(
-        message="Failed to select content data.",
+        message="Failed to select media data.",
         success=False,
     )
 
@@ -152,7 +152,7 @@ def update_media(
     patch: Dict[str, Any],
 ):
     """
-    Update content
+    Update media
     """
     log.info("Calling update_media")
 
@@ -173,29 +173,29 @@ def update_media(
         )
 
     patch.update({"id": media_id})
-    patch.update({"partitionKey": "content"})
+    patch.update({"partitionKey": "media"})
 
     try:
         success = client.update_data(
-            item={"id": media_id, "partitionKey": "content"},
+            item={"id": media_id, "partitionKey": "media"},
             body=patch,
             upsert=False,
         )
         if not success:
-            log.critical(f"Failed to update content. Check logs for details.")
+            log.critical(f"Failed to update media. Check logs for details.")
             return return_json(
-                message="Failed to update content.",
+                message="Failed to update media.",
                 success=False,
             )
     except Exception as e:
-        log.critical(f"Failed to update content. Error: {e}")
+        log.critical(f"Failed to update media. Error: {e}")
         return return_json(
-            message="Failed to update content.",
+            message="Failed to update media.",
             success=False,
         )
 
     return return_json(
-        message="Successfully updated content.",
+        message="Successfully updated media.",
         success=True,
     )
 
@@ -205,7 +205,7 @@ def delete_media(
     media_id: str,
 ):
     """
-    Delete content
+    Delete media
     """
     log.info("Calling delete_media")
 
@@ -228,22 +228,22 @@ def delete_media(
     try:
         success = client.delete_data(
             item=media_id,
-            partition_key="content",
+            partition_key="media",
         )
         if not success:
-            log.critical(f"Failed to delete content. Check logs for details.")
+            log.critical(f"Failed to delete media. Check logs for details.")
             return return_json(
-                message="Failed to delete content.",
+                message="Failed to delete media.",
                 success=False,
             )
     except Exception as e:
-        log.critical(f"Failed to delete content. Error: {e}")
+        log.critical(f"Failed to delete media. Error: {e}")
         return return_json(
-            message="Failed to delete content.",
+            message="Failed to delete media.",
             success=False,
         )
 
     return return_json(
-        message="Successfully deleted content.",
+        message="Successfully deleted media.",
         success=True,
     )

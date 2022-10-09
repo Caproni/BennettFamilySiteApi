@@ -16,8 +16,8 @@ from bfsa.controllers.family_tree import (
     family_tree_relationship_controller,
     family_tree_data_source_controller,
 )
-from bfsa.controllers.content import media_controller
-from bfsa.controllers.media import photos_controller
+from bfsa.controllers.media import media_controller
+from bfsa.controllers.content import content_controller
 from bfsa.controllers.recipes import (
     recipe_controller,
     recipe_step_controller,
@@ -43,7 +43,7 @@ server.include_router(family_tree_data_source_controller.router, tags=["Family T
 
 server.include_router(media_controller.router, tags=["Media"])
 
-server.include_router(photos_controller.router, tags=["Photos"])
+server.include_router(content_controller.router, tags=["Content"])
 
 server.include_router(recipe_controller.router, tags=["Recipes"])
 server.include_router(recipe_step_controller.router, tags=["Recipe Steps"])

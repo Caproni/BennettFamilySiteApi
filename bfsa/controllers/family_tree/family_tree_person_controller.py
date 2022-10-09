@@ -151,7 +151,7 @@ def put_family_tree_person_image(
     try:
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
-            container="family-tree-media",
+            container="family-tree-content",
             guid=family_tree_person_id,
             file=image,
             overwrite=True,
@@ -167,7 +167,7 @@ def put_family_tree_person_image(
     response = read_family_tree_people(where={"id": family_tree_person_id})
 
     if response["success"]:
-        content = response["content"]
+        content = response["media"]
         if content:
             family_tree_person_dict = content[0]
             if "blob_url" in family_tree_person_dict.keys() and family_tree_person_dict["blob_url"] == blob_url:
@@ -228,7 +228,7 @@ def delete_family_tree_person_image(
     try:
         success = delete_blob(
             connection=blob_credentials["credentials"],
-            container="family-tree-media",
+            container="family-tree-content",
             url="",
         )
 

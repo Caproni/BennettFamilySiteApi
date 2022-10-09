@@ -23,23 +23,34 @@ router = APIRouter()
 
 environment = Base()
 
+#    @       @
+#     @     @
+#   @@@@@@@@@@@
+#  @@@ @@@@@ @@@
+# @@@@@@@@@@@@@@@
+# @  @@@@@@@@@  @
+# @  @       @  @
+#     @@   @@
 
-@router.post("/api/createPhoto")
-def create_photo(
+
+@router.post("/api/createContent")
+def create_content(
     name: str,
-    height: float,
-    width: float,
     file_format: str,
     file: UploadFile = File(...),
+    height: Optional[float] = None,
+    width: Optional[float] = None,
     description: Optional[str] = None,
     camera_details: Optional[str] = None,
     taken_by: Optional[str] = None,
     taken_date: Optional[str] = None,
 ):
     """
-    Add photo object to database
+    Add content object to database
     """
-    log.info("Calling create_photo")
+    log.info("Calling create_content")
+
+    allowed_media_extensions = ["png", "bmp", "jpg", "jpeg", "mp4"]
 
     # check inputs
 
@@ -52,7 +63,7 @@ def create_photo(
     if (
         file
         and "." in file.filename
-        and file.filename.rsplit(".", 1)[1].lower() not in ["png", "bmp", "jpg", "jpeg"]
+        and file.filename.rsplit(".", 1)[1].lower() not in allowed_media_extensions
     ):
         return return_json(
             "Invalid image file.",
@@ -93,13 +104,13 @@ def create_photo(
         )
 
     except Exception as e:
-        log.critical(f"Failed to insert photo. Error: {e}")
+        log.critical(f"Failed to insert content. Error: {e}")
         return return_json(
-            message="Failed to insert photo.",
+            message="Failed to insert content.",
             success=False,
         )
 
-    photo_dict = {
+    content_dict = {
         "name": name,
         "description": description,
         "file_format": file_format,
@@ -115,18 +126,18 @@ def create_photo(
 
     try:
         cosmos_success = client.insert_data(
-            [photo_dict],
+            [content_dict],
         )
         if not cosmos_success:
-            log.critical(f"Failed to insert photo. Check logs for details.")
+            log.critical(f"Failed to insert content. Check logs for details.")
 
     except Exception as e:
         cosmos_success = False
-        log.critical(f"Failed to insert photo. Error: {e}")
+        log.critical(f"Failed to insert content. Error: {e}")
 
     if cosmos_success:
         return return_json(
-            message="Successfully inserted photo.",
+            message="Successfully inserted content.",
             success=True,
         )
 
@@ -139,25 +150,25 @@ def create_photo(
         )
         # TODO: indicate whether roll back was successful
         return return_json(
-            message="Failed to insert photo.",
+            message="Failed to insert content.",
             success=False,
         )
     except Exception as e:
-        log.critical(f"Failed to insert photo. Check blob storage for orphaned blobs. Error: {e}")
+        log.critical(f"Failed to insert content. Check blob storage for orphaned blobs. Error: {e}")
         return return_json(
-            message="Failed to insert photo.",
+            message="Failed to insert content.",
             success=False,
         )
 
 
-@router.get("/api/readPhotos")
-def read_photos(
+@router.get("/api/readContent")
+def read_content(
     where: Dict[str, Any] = None,
 ):
     """
-    Read photo
+    Read content
     """
-    log.info("Calling read_photos")
+    log.info("Calling read_content")
 
     db_config = Environment.load_db_credentials()
 
@@ -187,20 +198,20 @@ def read_photos(
         )
         if data:
             return return_json(
-                message="Successfully selected photo data.",
+                message="Successfully selected content data.",
                 success=True,
                 content=data,
             )
     except Exception as e:
-        log.critical(f"Failed to select photo data. Error: {e}")
+        log.critical(f"Failed to select content data. Error: {e}")
         return return_json(
-            message="Failed to select photo data.",
+            message="Failed to select content data.",
             success=False,
         )
 
-    log.critical(f"Failed to select photo data. Check logs for details.")
+    log.critical(f"Failed to select content data. Check logs for details.")
     return return_json(
-        message="Failed to select photo data.",
+        message="Failed to select content data.",
         success=False,
     )
 
@@ -300,7 +311,7 @@ def delete_photo(
 
         blob_success = delete_blob(
             connection=blob_credentials["credentials"],
-            container="media",
+            container="content",
             url="",
         )
 
