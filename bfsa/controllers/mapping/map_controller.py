@@ -14,6 +14,7 @@ from fastapi import APIRouter
 
 from bfsa.controllers.environment import Environment as Base
 from bfsa.utils.return_json import return_json
+from bfsa.utils.get_vault_secret import get_vault_secret
 from bfsa.utils.logger import logger as log
 
 
@@ -28,5 +29,8 @@ async def get_mapbox_key():
     return return_json(
         message="Mapbox key successfully obtained",
         success=True,
-        content="pk.eyJ1IjoiaGVsbGVxdWluIiwiYSI6ImNsOThsaXltNjByamYzeGxtaDZlbWwzdXEifQ.8DjS1r32qAd2HEQU00k-6g",
+        content=get_vault_secret(
+            secret_name="mapbox-token",
+            production=environment["IS_PROD"],
+        ),
     )
