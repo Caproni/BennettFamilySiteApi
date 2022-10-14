@@ -28,5 +28,5 @@ async def get_mapbox_key():
     return return_json(
         message="Mapbox key successfully obtained",
         success=True,
-        content="pk.eyJ1IjoiaGVsbGVxdWluIiwiYSI6ImNrb2ZtOGp4NTBnbGYybnAybXVrMTZuaWIifQ.Xe98acRuNfv3A7uxefmstg",
+        content="pk.eyJ1IjoiaGVsbGVxdWluIiwiYSI6ImNsOThsaXltNjByamYzeGxtaDZlbWwzdXEifQ.8DjS1r32qAd2HEQU00k-6g",
     )
