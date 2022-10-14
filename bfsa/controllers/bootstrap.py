@@ -16,6 +16,7 @@ from bfsa.controllers.family_tree import (
     family_tree_relationship_controller,
     family_tree_data_source_controller,
 )
+from bfsa.controllers.mapping import map_controller
 from bfsa.controllers.media import media_controller
 from bfsa.controllers.content import content_controller
 from bfsa.controllers.recipes import (
@@ -40,6 +41,8 @@ server.include_router(authentication_controller.router, tags=["Authentication"])
 server.include_router(family_tree_person_controller.router, tags=["Family Tree People"])
 server.include_router(family_tree_relationship_controller.router, tags=["Family Tree Relationships"])
 server.include_router(family_tree_data_source_controller.router, tags=["Family Tree Data Sources"])
+
+server.include_router(map_controller.router, tags=["Maps"])
 
 server.include_router(media_controller.router, tags=["Media"])
 
