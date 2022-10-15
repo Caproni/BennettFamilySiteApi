@@ -145,8 +145,8 @@ def create_content(
     # roll back by deleting blob
 
     try:
-        response = delete_photo(
-            photo_id=guid,
+        response = delete_content(
+            content_id=guid,
         )
         # TODO: indicate whether roll back was successful
         return return_json(
@@ -216,15 +216,15 @@ def read_content(
     )
 
 
-@router.patch("/api/updatePhotoMetadata")
-def update_photo_metadata(
-    photo_id: str,
+@router.patch("/api/updateContentMetadata")
+def update_content_metadata(
+    content_id: str,
     patch: Dict[str, Any],
 ):
     """
-    Update photo
+    Update content metadata
     """
-    log.info("Calling update_photo_metadata")
+    log.info("Calling update_content_metadata")
 
     db_config = Environment.load_db_credentials()
 
@@ -242,42 +242,42 @@ def update_photo_metadata(
             success=False,
         )
 
-    patch.update({"id": photo_id})
+    patch.update({"id": content_id})
     patch.update({"partitionKey": "photo"})
 
     try:
         success = client.update_data(
-            item={"id": photo_id, "partitionKey": "photo"},
+            item={"id": content_id, "partitionKey": "photo"},
             body=patch,
             upsert=False,
         )
         if not success:
-            log.critical(f"Failed to update photo metadata. Check logs for details.")
+            log.critical(f"Failed to update content metadata. Check logs for details.")
             return return_json(
-                message="Failed to update photo metadata.",
+                message="Failed to update content metadata.",
                 success=False,
             )
     except Exception as e:
-        log.critical(f"Failed to update photo metadata. Error: {e}")
+        log.critical(f"Failed to update content metadata. Error: {e}")
         return return_json(
-            message="Failed to update photo metadata.",
+            message="Failed to update content metadata.",
             success=False,
         )
 
     return return_json(
-        message="Successfully updated photo metadata.",
+        message="Successfully updated content metadata.",
         success=True,
     )
 
 
-@router.delete("/api/deletePhoto")
-def delete_photo(
-    photo_id: str,
+@router.delete("/api/deleteContent")
+def delete_content(
+    content_id: str,
 ):
     """
-    Delete photo
+    Delete content
     """
-    log.info("Calling delete_photo")
+    log.info("Calling delete_content")
 
     db_config = Environment.load_db_credentials()
 
@@ -299,13 +299,13 @@ def delete_photo(
 
     try:
         success = client.delete_data(
-            item=photo_id,
+            item=content_id,
             partition_key="photo",
         )
         if not success:
-            log.critical(f"Failed to delete photo. Check logs for details.")
+            log.critical(f"Failed to delete content. Check logs for details.")
             return return_json(
-                message="Failed to delete photo.",
+                message="Failed to delete content.",
                 success=False,
             )
 
@@ -316,13 +316,13 @@ def delete_photo(
         )
 
     except Exception as e:
-        log.critical(f"Failed to delete photo. Error: {e}")
+        log.critical(f"Failed to delete content. Error: {e}")
         return return_json(
-            message="Failed to delete photo.",
+            message="Failed to delete content.",
             success=False,
         )
 
     return return_json(
-        message="Successfully deleted photo.",
+        message="Successfully deleted content.",
         success=True,
     )
