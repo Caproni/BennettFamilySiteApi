@@ -298,6 +298,15 @@ def delete_content(
     blob_credentials = get_blob_credentials()
 
     try:
+        content_details = read_content(where={"id": content_id})
+    except Exception as e:
+        log.critical(f"Failed to read content. Error: {e}")
+        return return_json(
+            message="Failed to read content.",
+            success=False,
+        )
+
+    try:
         success = client.delete_data(
             item=content_id,
             partition_key="photo",
@@ -309,11 +318,14 @@ def delete_content(
                 success=False,
             )
 
-        blob_success = delete_blob(
+        blob_delete_success = delete_blob(
             connection=blob_credentials["credentials"],
             container="content",
-            url="",
+            url=content_details,
         )
+
+        if blob_delete_success:
+            ...
 
     except Exception as e:
         log.critical(f"Failed to delete content. Error: {e}")
