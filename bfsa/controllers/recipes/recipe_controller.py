@@ -157,7 +157,7 @@ def put_recipe_image(
     response = read_recipes(where={"id": recipe_id})
 
     if response["success"]:
-        content = response["media"]
+        content = response["content"]
         if content:
             recipe_dict = content[0]
             if "blob_url" in recipe_dict.keys() and recipe_dict["blob_url"] == blob_url:

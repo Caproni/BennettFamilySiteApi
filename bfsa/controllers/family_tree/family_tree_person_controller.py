@@ -167,7 +167,7 @@ def put_family_tree_person_image(
     response = read_family_tree_people(where={"id": family_tree_person_id})
 
     if response["success"]:
-        content = response["media"]
+        content = response["content"]
         if content:
             family_tree_person_dict = content[0]
             if "blob_url" in family_tree_person_dict.keys() and family_tree_person_dict["blob_url"] == blob_url:

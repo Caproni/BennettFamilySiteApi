@@ -151,7 +151,7 @@ def put_ingredient_image(
     response = read_ingredients(where={"id": ingredient_id})
 
     if response["success"]:
-        content = response["media"]
+        content = response["content"]
         if content:
             ingredient_dict = content[0]
             if "blob_url" in ingredient_dict.keys() and ingredient_dict["blob_url"] == blob_url:
@@ -209,19 +209,31 @@ def delete_ingredient_image(
 
     blob_credentials = get_blob_credentials()
 
-    try:
-        success = delete_blob(
-            connection=blob_credentials["credentials"],
-            container="recipe-photos",
-            url="",
-        )
+    response = read_ingredients(where={"id": ingredient_id})
 
-    except Exception as e:
-        log.critical(f"Failed to delete ingredient image. Error: {e}")
-        return return_json(
-            message="Failed to delete ingredient image.",
-            success=False,
-        )
+    if response["success"]:
+        target_ingredient = response["content"][0]
+        if "blob_url" in target_ingredient.keys() and target_ingredient["blob_url"]:
+
+            try:
+                success = delete_blob(
+                    connection=blob_credentials["credentials"],
+                    container="recipe-photos",
+                    url=target_ingredient["blob_url"],
+                )
+
+            except Exception as e:
+                log.critical(f"Failed to delete ingredient image. Error: {e}")
+                return return_json(
+                    message="Failed to delete ingredient image.",
+                    success=False,
+                )
+        else:
+            log.info(f"No ingredient image to delete.")
+            return return_json(
+                message="No ingredient image to delete.",
+                success=True,
+            )
 
     return return_json(
         message="Successfully deleted ingredient image.",
@@ -367,21 +379,29 @@ def delete_ingredient(
         ingredient_id=ingredient_id,
     )
 
-    try:
-        success = client.delete_data(
-            item=ingredient_id,
-            partition_key="ingredients",
-        )
-        if not success:
-            log.critical(f"Failed to delete ingredient. Check logs for details.")
+    if response["success"]:
+
+        try:
+            success = client.delete_data(
+                item=ingredient_id,
+                partition_key="ingredients",
+            )
+            if not success:
+                log.critical(f"Failed to delete ingredient. Check logs for details.")
+                return return_json(
+                    message="Failed to delete ingredient.",
+                    success=False,
+                )
+        except Exception as e:
+            log.critical(f"Failed to delete ingredient. Error: {e}")
             return return_json(
                 message="Failed to delete ingredient.",
                 success=False,
             )
-    except Exception as e:
-        log.critical(f"Failed to delete ingredient. Error: {e}")
+    else:
+        log.critical(f"Failed to delete ingredient blob.")
         return return_json(
-            message="Failed to delete ingredient.",
+            message="Failed to delete ingredient blob.",
             success=False,
         )
 

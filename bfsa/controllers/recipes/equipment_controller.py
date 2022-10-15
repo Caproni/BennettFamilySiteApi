@@ -151,7 +151,7 @@ def put_equipment_image(
     response = read_equipment(where={"id": equipment_id})
 
     if response["success"]:
-        content = response["media"]
+        content = response["content"]
         if content:
             equipment_dict = content[0]
             if "blob_url" in equipment_dict.keys() and equipment_dict["blob_url"] == blob_url:
@@ -209,19 +209,31 @@ def delete_equipment_image(
 
     blob_credentials = get_blob_credentials()
 
-    try:
-        success = delete_blob(
-            connection=blob_credentials["credentials"],
-            container="recipe-photos",
-            url="",
-        )
+    response = read_equipment(where={"id": equipment_id})
 
-    except Exception as e:
-        log.critical(f"Failed to delete equipment image. Error: {e}")
-        return return_json(
-            message="Failed to delete equipment image.",
-            success=False,
-        )
+    if response["success"]:
+        target_equipment = response["content"][0]
+        if "blob_url" in target_equipment.keys() and target_equipment["blob_url"]:
+
+            try:
+                success = delete_blob(
+                    connection=blob_credentials["credentials"],
+                    container="recipe-photos",
+                    url=target_equipment["blob_url"],
+                )
+
+            except Exception as e:
+                log.critical(f"Failed to delete equipment image. Error: {e}")
+                return return_json(
+                    message="Failed to delete equipment image.",
+                    success=False,
+                )
+        else:
+            log.info(f"No equipment image to delete.")
+            return return_json(
+                message="No equipment image to delete.",
+                success=True,
+            )
 
     return return_json(
         message="Successfully deleted equipment image.",
@@ -363,21 +375,33 @@ def delete_equipment(
             success=False,
         )
 
-    try:
-        success = client.delete_data(
-            item=equipment_id,
-            partition_key="equipment",
-        )
-        if not success:
-            log.critical(f"Failed to delete equipment. Check logs for details.")
+    response = delete_equipment_image(
+        equipment_id=equipment_id,
+    )
+
+    if response["success"]:
+
+        try:
+            success = client.delete_data(
+                item=equipment_id,
+                partition_key="equipment",
+            )
+            if not success:
+                log.critical(f"Failed to delete equipment. Check logs for details.")
+                return return_json(
+                    message="Failed to delete equipment.",
+                    success=False,
+                )
+        except Exception as e:
+            log.critical(f"Failed to delete equipment. Error: {e}")
             return return_json(
                 message="Failed to delete equipment.",
                 success=False,
             )
-    except Exception as e:
-        log.critical(f"Failed to delete equipment. Error: {e}")
+    else:
+        log.critical(f"Failed to delete equipment blob.")
         return return_json(
-            message="Failed to delete equipment.",
+            message="Failed to delete equipment blob.",
             success=False,
         )
 
