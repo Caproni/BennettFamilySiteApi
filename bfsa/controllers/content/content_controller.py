@@ -320,8 +320,8 @@ def delete_content(
 
         blob_delete_success = delete_blob(
             connection=blob_credentials["credentials"],
-            container="content",
-            url=content_details,
+            container="media",
+            url=content_details["content"][0]["blob_url"],
         )
 
         if blob_delete_success:
