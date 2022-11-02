@@ -8,8 +8,7 @@ Created on 2022-07-16
 
 from fastapi import APIRouter
 
-from bfsa.db.environment import Environment
-from bfsa.db.client import Client
+from bfsa.db.environment import client_factory
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
 from bfsa.utils.logger import logger as log
@@ -27,21 +26,7 @@ def read_recipe_details(
     """
     log.info("Calling read_recipe_details")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     # get recipe
 

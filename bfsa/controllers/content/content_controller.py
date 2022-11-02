@@ -9,8 +9,8 @@ Created on 2022-07-16
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, UploadFile, File
 
-from bfsa.db.environment import Environment
-from bfsa.db.client import Client, get_blob_credentials
+from bfsa.db.environment import client_factory
+from bfsa.db.client import get_blob_credentials
 from bfsa.controllers.environment import Environment as Base
 from bfsa.blob.blob_service_client import upload_blob, delete_blob
 from bfsa.sql.create_select import create_select
@@ -72,21 +72,7 @@ def create_content(
 
     # pre-amble
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     # insert data - blob first then metadata
 
@@ -170,21 +156,7 @@ def read_content(
     """
     log.info("Calling read_content")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     if where is None:
         where = {}
@@ -226,21 +198,7 @@ def update_content_metadata(
     """
     log.info("Calling update_content_metadata")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     patch.update({"id": content_id})
     patch.update({"partitionKey": "photo"})
@@ -279,21 +237,7 @@ def delete_content(
     """
     log.info("Calling delete_content")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     blob_credentials = get_blob_credentials()
 

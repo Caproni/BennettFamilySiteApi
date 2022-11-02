@@ -10,8 +10,7 @@ from typing import Dict, Any, Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from bfsa.db.environment import Environment
-from bfsa.db.client import Client
+from bfsa.db.environment import client_factory
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
 from bfsa.utils.create_guid import create_guid
@@ -48,21 +47,7 @@ def create_media(
     """
     log.info("Calling create_media")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     media_dict = dict(media)
     media_dict.update({"id": create_guid()})
@@ -100,21 +85,7 @@ def read_media(
     """
     log.info("Calling read_media")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     if where is None:
         where = {}
@@ -156,21 +127,7 @@ def update_media(
     """
     log.info("Calling update_media")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     patch.update({"id": media_id})
     patch.update({"partitionKey": "media"})
@@ -209,21 +166,7 @@ def delete_media(
     """
     log.info("Calling delete_media")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     try:
         success = client.delete_data(
