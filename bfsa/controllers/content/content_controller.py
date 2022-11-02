@@ -140,7 +140,9 @@ def create_content(
             success=False,
         )
     except Exception as e:
-        log.critical(f"Failed to insert content. Check blob storage for orphaned blobs. Error: {e}")
+        log.critical(
+            f"Failed to insert content. Check blob storage for orphaned blobs. Error: {e}"
+        )
         return return_json(
             message="Failed to insert content.",
             success=False,

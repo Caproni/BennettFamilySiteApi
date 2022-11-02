@@ -41,7 +41,9 @@ def update_many_media(
                 medium,
             )
         except Exception as e:
-            log.error(f"Error calling update_media on media with id: {guid} and index: {i}. Error: {e}")
+            log.error(
+                f"Error calling update_media on media with id: {guid} and index: {i}. Error: {e}"
+            )
 
     return return_json(
         message="Successfully updated multiple media documents.",

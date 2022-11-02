@@ -39,8 +39,12 @@ server.include_router(admin_controller.router, tags=["Administration"])
 server.include_router(authentication_controller.router, tags=["Authentication"])
 
 server.include_router(family_tree_person_controller.router, tags=["Family Tree People"])
-server.include_router(family_tree_relationship_controller.router, tags=["Family Tree Relationships"])
-server.include_router(family_tree_data_source_controller.router, tags=["Family Tree Data Sources"])
+server.include_router(
+    family_tree_relationship_controller.router, tags=["Family Tree Relationships"]
+)
+server.include_router(
+    family_tree_data_source_controller.router, tags=["Family Tree Data Sources"]
+)
 
 server.include_router(map_controller.router, tags=["Maps"])
 
