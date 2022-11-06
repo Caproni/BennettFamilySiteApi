@@ -28,6 +28,7 @@ from bfsa.controllers.recipes import (
     equipment_usage_controller,
     recipe_detail_controller,
 )
+from bfsa.controllers.movie_database import movie_database_controller
 
 
 port = 4646
@@ -49,6 +50,8 @@ server.include_router(
 server.include_router(map_controller.router, tags=["Maps"])
 
 server.include_router(media_controller.router, tags=["Media"])
+
+server.include_router(movie_database_controller.router, tags=["Movie Database"])
 
 server.include_router(content_controller.router, tags=["Content"])
 
