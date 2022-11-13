@@ -19,6 +19,7 @@ from bfsa.controllers.family_tree import (
 from bfsa.controllers.mapping import map_controller
 from bfsa.controllers.media import media_controller
 from bfsa.controllers.content import content_controller
+from bfsa.controllers.papers import papers_controller
 from bfsa.controllers.recipes import (
     recipe_controller,
     recipe_step_controller,
@@ -54,6 +55,8 @@ server.include_router(media_controller.router, tags=["Media"])
 server.include_router(movie_database_controller.router, tags=["Movie Database"])
 
 server.include_router(content_controller.router, tags=["Content"])
+
+server.include_router(papers_controller.router, tags=["Papers"])
 
 server.include_router(recipe_controller.router, tags=["Recipes"])
 server.include_router(recipe_step_controller.router, tags=["Recipe Steps"])
