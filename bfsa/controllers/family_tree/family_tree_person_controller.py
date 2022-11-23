@@ -10,8 +10,8 @@ from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
 
-from bfsa.db.environment import Environment
-from bfsa.db.client import Client, get_blob_credentials
+from bfsa.db.environment import client_factory
+from bfsa.db.client import get_blob_credentials
 from bfsa.blob.blob_service_client import upload_blob, delete_blob
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
@@ -55,21 +55,7 @@ def create_family_tree_person(
     """
     log.info("Calling create_family_tree_person")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     person_dict = dict(person)
     person_dict.update({"id": create_guid()})
@@ -128,21 +114,7 @@ def put_family_tree_person_image(
 
     # pre-amble
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     # insert data - blob first then metadata
 
@@ -254,21 +226,7 @@ def read_family_tree_people(
     """
     log.info("Calling read_family_tree_people")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     if where is None:
         where = {}
@@ -310,21 +268,7 @@ def update_family_tree_person(
     """
     log.info("Calling update_family_tree_person")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     patch.update({"id": family_tree_person_id})
     patch.update({"partitionKey": "family-tree-person"})
@@ -363,21 +307,7 @@ def delete_family_tree_person(
     """
     log.info("Calling delete_family_tree_person")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     try:
         success = client.delete_data(

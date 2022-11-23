@@ -10,8 +10,7 @@ from typing import Dict, Any, List, Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from bfsa.db.environment import Environment
-from bfsa.db.client import Client
+from bfsa.db.environment import client_factory
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
 from bfsa.utils.create_guid import create_guid
@@ -43,21 +42,7 @@ def create_recipe_step(
     """
     log.info("Calling create_recipe_step")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     recipe_step_dict = dict(recipe_step)
     recipe_step_dict.update({"id": create_guid()})
@@ -95,21 +80,7 @@ def read_recipe_steps(
     """
     log.info("Calling read_recipe_steps")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     if where is None:
         where = {}
@@ -151,21 +122,7 @@ def update_recipe_step(
     """
     log.info("Calling update_recipe_step")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     patch.update({"id": recipe_step_id})
     patch.update({"partitionKey": "recipe-steps"})
@@ -204,21 +161,7 @@ def delete_recipe_step(
     """
     log.info("Calling delete_recipe")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     try:
         success = client.delete_data(

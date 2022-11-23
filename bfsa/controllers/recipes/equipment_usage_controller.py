@@ -10,8 +10,7 @@ from typing import Dict, Any
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from bfsa.db.environment import Environment
-from bfsa.db.client import Client
+from bfsa.db.environment import client_factory
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
 from bfsa.utils.create_guid import create_guid
@@ -39,21 +38,7 @@ def create_equipment_usage(
     """
     log.info("Calling create_equipment_usage")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     equipment_usage_dict = dict(equipment_usage)
     equipment_usage_dict.update({"id": create_guid()})
@@ -91,21 +76,7 @@ def read_equipment_usages(
     """
     log.info("Calling read_equipment_usages")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     if where is None:
         where = {}
@@ -147,21 +118,7 @@ def update_equipment_usage(
     """
     log.info("Calling update_equipment_usage")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     patch.update({"id": equipment_usage_id})
     patch.update({"partitionKey": "equipment-usage"})
@@ -200,21 +157,7 @@ def delete_equipment_usage(
     """
     log.info("Calling delete_equipment_usage")
 
-    db_config = Environment.load_db_credentials()
-
-    try:
-        client = Client(
-            endpoint=db_config["uri"],
-            key=db_config["key"],
-            database_name=db_config["db"],
-            container_name=db_config["collection"],
-        )
-    except Exception as e:
-        log.critical(f"Error connecting to database. Error: {e}")
-        return return_json(
-            message="Error connecting to database.",
-            success=False,
-        )
+    client = client_factory()
 
     try:
         success = client.delete_data(

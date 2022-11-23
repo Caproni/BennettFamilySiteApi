@@ -9,9 +9,11 @@ Created on 2022-07-17
 from typing import Dict
 from json import load
 
+from bfsa.db.client import Client
 from bfsa.controllers.environment import Environment as BaseEnvironment
 from bfsa.utils.get_vault_secret import get_vault_secret
 from bfsa.utils.logger import logger as log
+from bfsa.utils.return_json import return_json
 
 
 base = BaseEnvironment()
@@ -30,6 +32,24 @@ class Environment:
                 production=base["IS_PROD"],
             )
             return db_config
+
+
+def client_factory() -> Client:
+    db_config = Environment.load_db_credentials()
+
+    try:
+        return Client(
+            endpoint=db_config["uri"],
+            key=db_config["key"],
+            database_name=db_config["db"],
+            container_name=db_config["collection"],
+        )
+    except Exception as e:
+        log.critical(f"Error connecting to database. Error: {e}")
+        return return_json(
+            message="Error connecting to database.",
+            success=False,
+        )
 
 
 if __name__ == "__main__":

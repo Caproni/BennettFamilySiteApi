@@ -1,13 +1,14 @@
 #!
 # -*- coding: utf-8 -*-
 """
-Created on 2022-07-16
+Created on 2022-11-12
 @author: Edmund Bennett
 @email: bennettedmund@gmail.com
 """
 
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, UploadFile, File
+from PyPDF2 import PdfReader
 
 from bfsa.db.environment import client_factory
 from bfsa.db.client import get_blob_credentials
@@ -33,24 +34,23 @@ environment = Base()
 #     @@   @@
 
 
-@router.post("/api/createContent")
-def create_content(
-    name: str,
-    file_format: str,
+@router.post("/api/createPaper")
+def create_paper(
+    title: str,
     file: UploadFile = File(...),
-    height: Optional[float] = None,
-    width: Optional[float] = None,
     description: Optional[str] = None,
-    camera_details: Optional[str] = None,
-    taken_by: Optional[str] = None,
-    taken_date: Optional[str] = None,
+    abstract: Optional[str] = None,
+    doi: Optional[str] = None,
+    language: Optional[str] = None,
+    authors: Optional[str] = None,
+    publication_type: Optional[str] = None,
+    publication_location: Optional[str] = None,
+    publication_date: Optional[str] = None,
 ):
     """
-    Add content object to database
+    Add paper object to database
     """
-    log.info("Calling create_content")
-
-    allowed_media_extensions = ["png", "bmp", "jpg", "jpeg", "mp4"]
+    log.info("Calling create_paper")
 
     # check inputs
 
@@ -63,10 +63,10 @@ def create_content(
     if (
         file
         and "." in file.filename
-        and file.filename.rsplit(".", 1)[1].lower() not in allowed_media_extensions
+        and file.filename.rsplit(".", 1)[1].lower() not in ["pdf"]
     ):
         return return_json(
-            "Invalid image file.",
+            "Invalid file.",
             success=False,
         )
 
@@ -83,47 +83,53 @@ def create_content(
     try:
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
-            container="media",
+            container="papers",
             guid=guid,
             file=file,
             overwrite=False,
         )
 
     except Exception as e:
-        log.critical(f"Failed to insert content. Error: {e}")
+        log.critical(f"Failed to insert paper. Error: {e}")
         return return_json(
-            message="Failed to insert content.",
+            message="Failed to insert paper.",
             success=False,
         )
 
-    content_dict = {
-        "name": name,
+    reader = PdfReader(file.file)
+    paper_content = "\n".join([page.extract_text() for page in reader.pages])
+
+    paper_dict = {
+        "title": title,
         "description": description,
-        "file_format": file_format,
-        "height": height,
-        "width": width,
-        "camera_details": camera_details,
-        "taken_by": taken_by,
-        "taken_date": taken_date,
+        "abstract": abstract,
+        "paper_content": paper_content,
+        "doi": doi,
+        "pages": len(reader.pages),
+        "language": language,
+        "publication_type": publication_type,
+        "publication_location": publication_location,
+        "publication_date": publication_date,
+        "authors": authors.split(",") if authors else None,
         "blob_url": blob_url,
         "id": guid,
-        "partitionKey": "photo",
+        "partitionKey": "papers",
     }
 
     try:
         cosmos_success = client.insert_data(
-            [content_dict],
+            [paper_dict],
         )
         if not cosmos_success:
-            log.critical(f"Failed to insert content. Check logs for details.")
+            log.critical(f"Failed to insert paper. Check logs for details.")
 
     except Exception as e:
         cosmos_success = False
-        log.critical(f"Failed to insert content. Error: {e}")
+        log.critical(f"Failed to insert paper. Error: {e}")
 
     if cosmos_success:
         return return_json(
-            message="Successfully inserted content.",
+            message="Successfully inserted paper.",
             success=True,
         )
 
@@ -131,38 +137,38 @@ def create_content(
     # roll back by deleting blob
 
     try:
-        response = delete_content(
-            content_id=guid,
+        response = delete_paper(
+            paper_id=guid,
         )
         # TODO: indicate whether roll back was successful
         return return_json(
-            message="Failed to insert content.",
+            message="Failed to insert paper.",
             success=False,
         )
     except Exception as e:
         log.critical(
-            f"Failed to insert content. Check blob storage for orphaned blobs. Error: {e}"
+            f"Failed to insert paper. Check blob storage for orphaned blobs. Error: {e}"
         )
         return return_json(
-            message="Failed to insert content.",
+            message="Failed to insert paper.",
             success=False,
         )
 
 
-@router.get("/api/readContent")
-def read_content(
+@router.get("/api/readPapers")
+def read_papers(
     where: Dict[str, Any] = None,
 ):
     """
-    Read content
+    Read papers
     """
-    log.info("Calling read_content")
+    log.info("Calling read_papers")
 
     client = client_factory()
 
     if where is None:
         where = {}
-    where.update({"partitionKey": "photo"})
+    where.update({"partitionKey": "papers"})
 
     query = create_select(where)
 
@@ -172,115 +178,115 @@ def read_content(
         )
         if data:
             return return_json(
-                message="Successfully selected content data.",
+                message="Successfully selected papers data.",
                 success=True,
                 content=data,
             )
     except Exception as e:
-        log.critical(f"Failed to select content data. Error: {e}")
+        log.critical(f"Failed to select papers data. Error: {e}")
         return return_json(
-            message="Failed to select content data.",
+            message="Failed to select papers data.",
             success=False,
         )
 
-    log.critical(f"Failed to select content data. Check logs for details.")
+    log.critical(f"Failed to select papers data. Check logs for details.")
     return return_json(
-        message="Failed to select content data.",
+        message="Failed to select papers data.",
         success=False,
     )
 
 
-@router.patch("/api/updateContentMetadata")
-def update_content_metadata(
-    content_id: str,
+@router.patch("/api/updatePaperMetadata")
+def update_paper_metadata(
+    paper_id: str,
     patch: Dict[str, Any],
 ):
     """
-    Update content metadata
+    Update papers metadata
     """
-    log.info("Calling update_content_metadata")
+    log.info("Calling update_paper_metadata")
 
     client = client_factory()
 
-    patch.update({"id": content_id})
-    patch.update({"partitionKey": "photo"})
+    patch.update({"id": paper_id})
+    patch.update({"partitionKey": "papers"})
 
     try:
         success = client.update_data(
-            item={"id": content_id, "partitionKey": "photo"},
+            item={"id": paper_id, "partitionKey": "papers"},
             body=patch,
             upsert=False,
         )
         if not success:
-            log.critical(f"Failed to update content metadata. Check logs for details.")
+            log.critical(f"Failed to update paper metadata. Check logs for details.")
             return return_json(
-                message="Failed to update content metadata.",
+                message="Failed to update paper metadata.",
                 success=False,
             )
     except Exception as e:
-        log.critical(f"Failed to update content metadata. Error: {e}")
+        log.critical(f"Failed to update paper metadata. Error: {e}")
         return return_json(
-            message="Failed to update content metadata.",
+            message="Failed to update paper metadata.",
             success=False,
         )
 
     return return_json(
-        message="Successfully updated content metadata.",
+        message="Successfully updated paper metadata.",
         success=True,
     )
 
 
-@router.delete("/api/deleteContent")
-def delete_content(
-    content_id: str,
+@router.delete("/api/deletePaper")
+def delete_paper(
+    paper_id: str,
 ):
     """
-    Delete content
+    Delete paper
     """
-    log.info("Calling delete_content")
+    log.info("Calling delete_paper")
 
     client = client_factory()
 
     blob_credentials = get_blob_credentials()
 
     try:
-        content_details = read_content(where={"id": content_id})
+        papers_details = read_papers(where={"id": paper_id})
     except Exception as e:
-        log.critical(f"Failed to read content. Error: {e}")
+        log.critical(f"Failed to read paper. Error: {e}")
         return return_json(
-            message="Failed to read content.",
+            message="Failed to read paper.",
             success=False,
         )
 
     try:
         success = client.delete_data(
-            item=content_id,
-            partition_key="photo",
+            item=paper_id,
+            partition_key="papers",
         )
         if not success:
-            log.critical(f"Failed to delete content. Check logs for details.")
+            log.critical(f"Failed to delete paper. Check logs for details.")
             return return_json(
-                message="Failed to delete content.",
+                message="Failed to delete paper.",
                 success=False,
             )
 
         blob_delete_success = delete_blob(
             connection=blob_credentials["credentials"],
-            container="media",
-            url=content_details["content"][0]["blob_url"],
+            container="paper",
+            url=papers_details["content"][0]["blob_url"],
         )
 
         if blob_delete_success:
             ...
 
     except Exception as e:
-        log.critical(f"Failed to delete content. Error: {e}")
+        log.critical(f"Failed to delete paper. Error: {e}")
         return return_json(
-            message="Failed to delete content.",
+            message="Failed to delete paper.",
             success=False,
         )
 
     return return_json(
-        message="Successfully deleted content.",
+        message="Successfully deleted paper.",
         success=True,
     )

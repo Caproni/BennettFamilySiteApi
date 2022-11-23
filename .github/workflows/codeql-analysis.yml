@@ -1,3 +1,4 @@
+---
 # For most projects, this workflow file will not need changing; you simply need
 # to commit it to your repository.
 #
@@ -58,7 +59,7 @@ jobs:
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
 
-    # ℹ️ Command-line programs to run using the OS shell.
+    # Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
 
     #   If the Autobuild fails above, remove it and uncomment the following three lines. 
