@@ -6,8 +6,9 @@ Created on 2022-08-20
 @email: bennettedmund@gmail.com
 """
 
-from typing import Optional
+import os
 from os import environ
+from typing import Optional
 from azure.keyvault.secrets import SecretClient
 from azure.identity import DefaultAzureCredential
 
@@ -29,4 +30,5 @@ def get_vault_secret(
         )
         return client.get_secret(secret_name).value
     except Exception as e:
-        log.critical(f"Connection to SecretClient could not be established. Error: {e}")
+        log.warning(f"Connection to SecretClient could not be established. Error: {e}")
+        return os.getenv(secret_name.upper())
