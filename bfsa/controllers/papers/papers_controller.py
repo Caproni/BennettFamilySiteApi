@@ -6,9 +6,11 @@ Created on 2022-11-12
 @email: bennettedmund@gmail.com
 """
 
+from os import system, remove
 from typing import Dict, Any, Optional
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile
 from PyPDF2 import PdfReader
+import csv
 
 from bfsa.db.environment import client_factory
 from bfsa.db.client import get_blob_credentials
@@ -17,6 +19,7 @@ from bfsa.blob.blob_service_client import upload_blob, delete_blob
 from bfsa.sql.create_select import create_select
 from bfsa.utils.return_json import return_json
 from bfsa.utils.create_guid import create_guid
+from bfsa.utils.get_files_recursively import FileManipulation
 from bfsa.utils.logger import logger as log
 
 
@@ -37,7 +40,7 @@ environment = Base()
 @router.post("/api/createPaper")
 def create_paper(
     title: str,
-    file: UploadFile = File(...),
+    file: UploadFile = None,
     description: Optional[str] = None,
     abstract: Optional[str] = None,
     doi: Optional[str] = None,
@@ -51,6 +54,33 @@ def create_paper(
     Add paper object to database
     """
     log.info("Calling create_paper")
+
+    staging_dir = "./staging"
+    staging_populated = False
+    if doi is not None:
+        try:
+            system(f'python -m PyPaperBot --doi="{doi}" --dwn-dir="{staging_dir}"')
+            staging_populated = True
+        except Exception as e:
+            log.warning(f"DOI provided but could not get paper. Error: {e}")
+            return return_json(
+                message="DOI provided but could not get paper.",
+                success=False,
+            )
+
+    bib_data = None
+    if staging_populated:  # then load obtained files
+
+        # metadata first (from result.csv)
+
+        with open(f"{staging_dir}/result.csv", newline="") as csv_file:
+            metadata = csv.DictReader(csv_file, delimiter=",")
+
+            for row in metadata:
+                bib_data = row
+                if not file.filename:
+                    file = UploadFile(f'{staging_dir}/{row["PDF Name"]}')
+                break  # always take the first result
 
     # check inputs
 
@@ -99,8 +129,10 @@ def create_paper(
     reader = PdfReader(file.file)
     paper_content = "\n".join([page.extract_text() for page in reader.pages])
 
+    parsed_authors = None if bib_data is None else bib_data["Authors"].split(" and ")
+
     paper_dict = {
-        "title": title,
+        "title": title if bib_data is None else bib_data["Name"],
         "description": description,
         "abstract": abstract,
         "paper_content": paper_content,
@@ -110,11 +142,23 @@ def create_paper(
         "publication_type": publication_type,
         "publication_location": publication_location,
         "publication_date": publication_date,
-        "authors": authors.split(",") if authors else None,
+        "authors": authors.split(",") if bib_data is None and parsed_authors is None else parsed_authors,
         "blob_url": blob_url,
         "id": guid,
         "partitionKey": "papers",
     }
+
+    # clear staging directory
+
+    files_in_staging = FileManipulation.get_files_recursively(
+        directory=staging_dir,
+        exclude_filename_text=".gitkeep",
+    )
+
+    for file_in_staging in files_in_staging:
+        remove(file_in_staging)
+
+    # insert data into cosmos
 
     try:
         cosmos_success = client.insert_data(
