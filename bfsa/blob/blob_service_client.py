@@ -7,8 +7,8 @@ Created on 2022-08-28
 """
 
 from typing import Optional
+from io import BytesIO
 from azure.storage.blob import BlobServiceClient
-from fastapi import UploadFile
 
 from bfsa.utils.logger import logger as log
 
@@ -16,7 +16,8 @@ from bfsa.utils.logger import logger as log
 def upload_blob(
     connection: str,
     container: str,
-    file: UploadFile,
+    filename: str,
+    file: BytesIO,
     guid: str,
     overwrite: bool = False,
 ) -> Optional[str]:
@@ -30,11 +31,12 @@ def upload_blob(
             container=container,
         )
 
-        client.get_container_properties()  # get properties of the container to force exception to be thrown if container does not exist
+        # get properties of the container to force exception to be thrown if container does not exist
+        client.get_container_properties()
 
         response = client.upload_blob(
-            f"{guid}.{file.filename.split('.')[-1]}",
-            file.file,
+            f"{guid}.{filename.split('.')[-1]}",
+            file,
             overwrite=overwrite,
         )
 
