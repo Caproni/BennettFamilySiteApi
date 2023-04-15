@@ -7,7 +7,7 @@ Created on 2022-08-20
 """
 
 import os
-from os import environ
+from dotenv import load_dotenv
 from typing import Optional
 from azure.keyvault.secrets import SecretClient
 from azure.identity import DefaultAzureCredential
@@ -21,7 +21,8 @@ def get_vault_secret(
 ) -> Optional[str]:
 
     if not production:
-        return environ[secret_name.upper()]
+        load_dotenv()
+        return os.getenv(secret_name.upper())
 
     try:
         client = SecretClient(

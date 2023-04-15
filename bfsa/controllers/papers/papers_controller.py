@@ -7,8 +7,10 @@ Created on 2022-11-12
 """
 
 from os import system, remove
+from io import BytesIO
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, UploadFile
+from fastapi.responses import FileResponse
 from PyPDF2 import PdfReader
 import csv
 
@@ -68,7 +70,7 @@ def create_paper(
                 success=False,
             )
 
-    bib_data = None
+    bib_data, file_bytes = None, None
     if staging_populated:  # then load obtained files
 
         # metadata first (from result.csv)
@@ -79,12 +81,16 @@ def create_paper(
             for row in metadata:
                 bib_data = row
                 if not file.filename:
-                    file = UploadFile(f'{staging_dir}/{row["PDF Name"]}')
+                    file = FileResponse(f'{staging_dir}/{row["PDF Name"]}')
+                    with open(f'{staging_dir}/{row["PDF Name"]}', "rb") as pdf:
+                        file_bytes = BytesIO(pdf.read())
                 break  # always take the first result
 
     # check inputs
 
-    if file.filename == "":
+    filename = file.filename if file.filename else file.path
+
+    if filename == "":
         return return_json(
             "No file selected for uploading.",
             success=False,
@@ -92,8 +98,8 @@ def create_paper(
 
     if (
         file
-        and "." in file.filename
-        and file.filename.rsplit(".", 1)[1].lower() not in ["pdf"]
+        and "." in filename
+        and filename.rsplit(".", 1)[1].lower() not in ["pdf"]
     ):
         return return_json(
             "Invalid file.",
@@ -115,7 +121,8 @@ def create_paper(
             connection=blob_credentials["credentials"],
             container="papers",
             guid=guid,
-            file=file,
+            filename=filename,
+            file=file_bytes,
             overwrite=False,
         )
 
@@ -126,7 +133,9 @@ def create_paper(
             success=False,
         )
 
-    reader = PdfReader(file.file)
+    file_bytes.seek(0)
+
+    reader = PdfReader(file_bytes)
     paper_content = "\n".join([page.extract_text() for page in reader.pages])
 
     parsed_authors = None if bib_data is None else bib_data["Authors"].split(" and ")
