@@ -14,4 +14,6 @@ COPY ./main.py /code/main.py
 
 COPY ./bfsa /code/bfsa
 
+COPY ./.env /code/.env
+
 CMD ["uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]
