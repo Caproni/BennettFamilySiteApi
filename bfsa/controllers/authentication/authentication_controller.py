@@ -38,7 +38,7 @@ def authenticate(
     environment = Environment()
 
     secret = get_vault_secret(
-        "bennett-family-admin-password",
+        "bennett_family_admin_password",
         production=environment["IS_PROD"],
     )
 

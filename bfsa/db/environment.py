@@ -28,7 +28,7 @@ class Environment:
         with open(Environment.PATH_TO_CONFIG, "r") as config_file:
             db_config = load(config_file)
             db_config["key"] = get_vault_secret(
-                "bennett-family-cosmos-connection-string",
+                "bennett_family_cosmos_connection_string",
                 production=base["IS_PROD"],
             )
             return db_config

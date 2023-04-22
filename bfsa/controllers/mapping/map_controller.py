@@ -26,7 +26,7 @@ async def get_mapbox_key():
         message="Mapbox key successfully obtained",
         success=True,
         content=get_vault_secret(
-            secret_name="mapbox-token",
+            secret_name="mapbox_token",
             production=environment["IS_PROD"],
         ),
     )

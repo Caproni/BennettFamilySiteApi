@@ -22,7 +22,7 @@ def get_blob_credentials():
         blob_credentials = load(credentials_file)
 
     blob_credentials["credentials"] = get_vault_secret(
-        "bennettfamilyblobs-credentials",
+        "bennettfamilyblobs_credentials",
         production=environment["IS_PROD"],
     )
     return blob_credentials
