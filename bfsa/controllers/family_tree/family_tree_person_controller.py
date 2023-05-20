@@ -9,6 +9,7 @@ Created on 2022-08-08
 from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
+from io import BytesIO
 
 from bfsa.db.environment import client_factory
 from bfsa.db.client import get_blob_credentials
@@ -85,7 +86,7 @@ def create_family_tree_person(
 
 
 @router.put("/api/putFamilyTreePersonImage")
-def put_family_tree_person_image(
+async def put_family_tree_person_image(
     family_tree_person_id: str,
     image: UploadFile = File(...),
 ):
@@ -123,9 +124,10 @@ def put_family_tree_person_image(
     try:
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
-            container="family-tree-content",
+            container="family-tree-photos",
             guid=family_tree_person_id,
-            file=image,
+            filename=image.filename,
+            file=BytesIO(await image.read()),
             overwrite=True,
         )
 
@@ -189,7 +191,7 @@ def put_family_tree_person_image(
         )
 
 
-@router.get("/api/deleteFamilyTreePersonImage")
+@router.delete("/api/deleteFamilyTreePersonImage")
 def delete_family_tree_person_image(
     family_tree_person_id: str,
 ):
@@ -198,11 +200,27 @@ def delete_family_tree_person_image(
     blob_credentials = get_blob_credentials()
 
     try:
-        success = delete_blob(
-            connection=blob_credentials["credentials"],
-            container="family-tree-content",
-            url="",
+        family_tree_person_details = read_family_tree_people(where={"id": family_tree_person_id})
+    except Exception as e:
+        log.critical(f"Failed to read family tree person. Error: {e}")
+        return return_json(
+            message="Failed to read family tree person.",
+            success=False,
         )
+
+    try:
+        blob_delete_success = delete_blob(
+            connection=blob_credentials["credentials"],
+            container="family-tree-photos",
+            url=family_tree_person_details["content"][0]["blob_url"],
+        )
+
+        if not blob_delete_success:
+            log.critical(f"Failed to delete family tree person image.")
+            return return_json(
+                message="Failed to delete family tree person image.",
+                success=False,
+            )
 
     except Exception as e:
         log.critical(f"Failed to delete family tree person image. Error: {e}")

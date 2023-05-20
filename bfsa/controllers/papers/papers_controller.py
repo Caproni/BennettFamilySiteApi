@@ -329,8 +329,12 @@ def delete_paper(
             url=papers_details["content"][0]["blob_url"],
         )
 
-        if blob_delete_success:
-            ...
+        if not blob_delete_success:
+            log.critical(f"Failed to delete paper.")
+            return return_json(
+                message="Failed to delete paper.",
+                success=False,
+            )
 
     except Exception as e:
         log.critical(f"Failed to delete paper. Error: {e}")
