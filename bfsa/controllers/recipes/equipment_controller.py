@@ -26,6 +26,7 @@ class EquipmentModel(BaseModel):
     """
     Pydantic model for equipment
     """
+
     name: str
     description: str
 
@@ -89,7 +90,8 @@ def put_equipment_image(
     if (
         image
         and "." in image.filename
-        and image.filename.rsplit(".", 1)[1].lower() not in ["png", "bmp", "jpg", "jpeg"]
+        and image.filename.rsplit(".", 1)[1].lower()
+        not in ["png", "bmp", "jpg", "jpeg"]
     ):
         return return_json(
             "Invalid image file.",
@@ -126,7 +128,10 @@ def put_equipment_image(
         content = response["content"]
         if content:
             equipment_dict = content[0]
-            if "blob_url" in equipment_dict.keys() and equipment_dict["blob_url"] == blob_url:
+            if (
+                "blob_url" in equipment_dict.keys()
+                and equipment_dict["blob_url"] == blob_url
+            ):
                 return return_json(
                     message="Successfully updated equipment image.",
                     success=True,
@@ -141,7 +146,9 @@ def put_equipment_image(
                     upsert=False,
                 )
                 if not cosmos_success:
-                    log.critical(f"Failed to insert equipment image. Check logs for details.")
+                    log.critical(
+                        f"Failed to insert equipment image. Check logs for details."
+                    )
 
             except Exception as e:
                 cosmos_success = False
@@ -166,7 +173,9 @@ def put_equipment_image(
             success=False,
         )
     except Exception as e:
-        log.critical(f"Failed to insert equipment image. Check blob storage for orphaned blobs. Error: {e}")
+        log.critical(
+            f"Failed to insert equipment image. Check blob storage for orphaned blobs. Error: {e}"
+        )
         return return_json(
             message="Failed to insert equipment image.",
             success=False,

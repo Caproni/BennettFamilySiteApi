@@ -27,6 +27,7 @@ class FamilyTreePersonModel(BaseModel):
     """
     Pydantic model for family-tree person
     """
+
     first_name: Optional[str]
     middle_names: List[str]
     chosen_name: Optional[str]
@@ -67,7 +68,9 @@ def create_family_tree_person(
             [person_dict],
         )
         if not success:
-            log.critical(f"Failed to insert family-tree person. Check logs for details.")
+            log.critical(
+                f"Failed to insert family-tree person. Check logs for details."
+            )
             return return_json(
                 message="Failed to insert family-tree person.",
                 success=False,
@@ -106,7 +109,8 @@ async def put_family_tree_person_image(
     if (
         image
         and "." in image.filename
-        and image.filename.rsplit(".", 1)[1].lower() not in ["png", "bmp", "jpg", "jpeg"]
+        and image.filename.rsplit(".", 1)[1].lower()
+        not in ["png", "bmp", "jpg", "jpeg"]
     ):
         return return_json(
             "Invalid image file.",
@@ -144,7 +148,10 @@ async def put_family_tree_person_image(
         content = response["content"]
         if content:
             family_tree_person_dict = content[0]
-            if "blob_url" in family_tree_person_dict.keys() and family_tree_person_dict["blob_url"] == blob_url:
+            if (
+                "blob_url" in family_tree_person_dict.keys()
+                and family_tree_person_dict["blob_url"] == blob_url
+            ):
                 return return_json(
                     message="Successfully updated family tree person image.",
                     success=True,
@@ -154,12 +161,17 @@ async def put_family_tree_person_image(
 
             try:
                 cosmos_success = client.update_data(
-                    item={"id": family_tree_person_id, "partitionKey": "family-tree-person"},
+                    item={
+                        "id": family_tree_person_id,
+                        "partitionKey": "family-tree-person",
+                    },
                     body=family_tree_person_dict,
                     upsert=False,
                 )
                 if not cosmos_success:
-                    log.critical(f"Failed to insert family tree person image. Check logs for details.")
+                    log.critical(
+                        f"Failed to insert family tree person image. Check logs for details."
+                    )
 
             except Exception as e:
                 cosmos_success = False
@@ -184,7 +196,9 @@ async def put_family_tree_person_image(
             success=False,
         )
     except Exception as e:
-        log.critical(f"Failed to insert family tree person image. Check blob storage for orphaned blobs. Error: {e}")
+        log.critical(
+            f"Failed to insert family tree person image. Check blob storage for orphaned blobs. Error: {e}"
+        )
         return return_json(
             message="Failed to insert family tree person image.",
             success=False,
@@ -200,7 +214,9 @@ def delete_family_tree_person_image(
     blob_credentials = get_blob_credentials()
 
     try:
-        family_tree_person_details = read_family_tree_people(where={"id": family_tree_person_id})
+        family_tree_person_details = read_family_tree_people(
+            where={"id": family_tree_person_id}
+        )
     except Exception as e:
         log.critical(f"Failed to read family tree person. Error: {e}")
         return return_json(
@@ -222,6 +238,22 @@ def delete_family_tree_person_image(
                 success=False,
             )
 
+    except Exception as e:
+        log.critical(f"Failed to delete family tree person image. Error: {e}")
+        return return_json(
+            message="Failed to delete family tree person image.",
+            success=False,
+        )
+
+    # blob deleted, now delete URL to blob from cosmos
+
+    family_tree_person_details.update({"blob_url": None})
+
+    try:
+        update_family_tree_person(
+            family_tree_person_id,
+            family_tree_person_details,
+        )
     except Exception as e:
         log.critical(f"Failed to delete family tree person image. Error: {e}")
         return return_json(
@@ -298,7 +330,9 @@ def update_family_tree_person(
             upsert=False,
         )
         if not success:
-            log.critical(f"Failed to update family-tree person. Check logs for details.")
+            log.critical(
+                f"Failed to update family-tree person. Check logs for details."
+            )
             return return_json(
                 message="Failed to update family-tree person.",
                 success=False,
@@ -333,7 +367,9 @@ def delete_family_tree_person(
             partition_key="family-tree-person",
         )
         if not success:
-            log.critical(f"Failed to delete family-tree person. Check logs for details.")
+            log.critical(
+                f"Failed to delete family-tree person. Check logs for details."
+            )
             return return_json(
                 message="Failed to delete family-tree person.",
                 success=False,

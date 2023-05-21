@@ -24,6 +24,7 @@ class MediaModel(BaseModel):
     """
     Pydantic model for media
     """
+
     director: Optional[str]
     title: str
     publisher: Optional[str]

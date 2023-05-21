@@ -24,6 +24,7 @@ class FamilyTreeDataSourceModel(BaseModel):
     """
     Pydantic model for family-tree data source
     """
+
     name: str
     description: str
     url: str
@@ -50,7 +51,9 @@ def create_family_tree_data_source(
             [data_source_dict],
         )
         if not success:
-            log.critical(f"Failed to insert family-tree data source. Check logs for details.")
+            log.critical(
+                f"Failed to insert family-tree data source. Check logs for details."
+            )
             return return_json(
                 message="Failed to insert family-tree data source.",
                 success=False,
@@ -102,7 +105,9 @@ def read_family_tree_data_sources(
             success=False,
         )
 
-    log.critical(f"Failed to select family-tree data source data. Check logs for details.")
+    log.critical(
+        f"Failed to select family-tree data source data. Check logs for details."
+    )
     return return_json(
         message="Failed to select family-tree data source data.",
         success=False,
@@ -126,12 +131,17 @@ def update_family_tree_data_source(
 
     try:
         success = client.update_data(
-            item={"id": family_tree_data_source_id, "partitionKey": "family-tree-data-source"},
+            item={
+                "id": family_tree_data_source_id,
+                "partitionKey": "family-tree-data-source",
+            },
             body=patch,
             upsert=False,
         )
         if not success:
-            log.critical(f"Failed to update family-tree data source. Check logs for details.")
+            log.critical(
+                f"Failed to update family-tree data source. Check logs for details."
+            )
             return return_json(
                 message="Failed to update family-tree data source.",
                 success=False,
@@ -166,7 +176,9 @@ def delete_family_tree_data_source(
             partition_key="family-tree-data-source",
         )
         if not success:
-            log.critical(f"Failed to delete family-tree data source. Check logs for details.")
+            log.critical(
+                f"Failed to delete family-tree data source. Check logs for details."
+            )
             return return_json(
                 message="Failed to delete family-tree data source.",
                 success=False,

@@ -24,6 +24,7 @@ class RecipeStepModel(BaseModel):
     """
     Pydantic model for recipe step
     """
+
     name: str
     index: int
     recipe_id: str

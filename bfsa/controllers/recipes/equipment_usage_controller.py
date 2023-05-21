@@ -24,6 +24,7 @@ class EquipmentUsageModel(BaseModel):
     """
     Pydantic model for equipment usage
     """
+
     recipe_step_id: str
     equipment_id: str
     notes: str

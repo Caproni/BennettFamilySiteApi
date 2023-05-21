@@ -26,6 +26,7 @@ class RecipeModel(BaseModel):
     """
     Pydantic model for recipe
     """
+
     name: str
     description: str
     duration_in_minutes: int
@@ -95,7 +96,8 @@ def put_recipe_image(
     if (
         image
         and "." in image.filename
-        and image.filename.rsplit(".", 1)[1].lower() not in ["png", "bmp", "jpg", "jpeg"]
+        and image.filename.rsplit(".", 1)[1].lower()
+        not in ["png", "bmp", "jpg", "jpeg"]
     ):
         return return_json(
             "Invalid image file.",
@@ -147,7 +149,9 @@ def put_recipe_image(
                     upsert=False,
                 )
                 if not cosmos_success:
-                    log.critical(f"Failed to insert recipe image. Check logs for details.")
+                    log.critical(
+                        f"Failed to insert recipe image. Check logs for details."
+                    )
 
             except Exception as e:
                 cosmos_success = False
@@ -172,7 +176,9 @@ def put_recipe_image(
             success=False,
         )
     except Exception as e:
-        log.critical(f"Failed to insert recipe image. Check blob storage for orphaned blobs. Error: {e}")
+        log.critical(
+            f"Failed to insert recipe image. Check blob storage for orphaned blobs. Error: {e}"
+        )
         return return_json(
             message="Failed to insert recipe image.",
             success=False,

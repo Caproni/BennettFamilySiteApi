@@ -96,11 +96,7 @@ def create_paper(
             success=False,
         )
 
-    if (
-        file
-        and "." in filename
-        and filename.rsplit(".", 1)[1].lower() not in ["pdf"]
-    ):
+    if file and "." in filename and filename.rsplit(".", 1)[1].lower() not in ["pdf"]:
         return return_json(
             "Invalid file.",
             success=False,
@@ -151,7 +147,9 @@ def create_paper(
         "publication_type": publication_type,
         "publication_location": publication_location,
         "publication_date": publication_date,
-        "authors": authors.split(",") if bib_data is None and parsed_authors is None else parsed_authors,
+        "authors": authors.split(",")
+        if bib_data is None and parsed_authors is None
+        else parsed_authors,
         "blob_url": blob_url,
         "id": guid,
         "partitionKey": "papers",

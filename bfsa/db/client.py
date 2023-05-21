@@ -32,6 +32,7 @@ class Client:
     """
     Client to connect to backend database and manage interactions
     """
+
     def __init__(
         self,
         endpoint: str,
@@ -67,10 +68,12 @@ class Client:
         :param query:
         :return:
         """
-        items = list(self.container.query_items(
-            query=query,
-            enable_cross_partition_query=True,
-        ))
+        items = list(
+            self.container.query_items(
+                query=query,
+                enable_cross_partition_query=True,
+            )
+        )
 
         return items
 
@@ -110,10 +113,12 @@ class Client:
             )
         else:
 
-            doc = list(self.container.query_items(
-                query=f"SELECT * FROM c WHERE c.id = '{item['id']}' AND c.partitionKey = '{item['partitionKey']}'",
-                enable_cross_partition_query=False,
-            ))
+            doc = list(
+                self.container.query_items(
+                    query=f"SELECT * FROM c WHERE c.id = '{item['id']}' AND c.partitionKey = '{item['partitionKey']}'",
+                    enable_cross_partition_query=False,
+                )
+            )
 
             if doc:
                 payload = doc[0]

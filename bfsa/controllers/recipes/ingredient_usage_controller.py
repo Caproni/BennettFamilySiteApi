@@ -24,6 +24,7 @@ class IngredientUsageModel(BaseModel):
     """
     Pydantic model for ingredient usage
     """
+
     recipe_step_id: str
     ingredient_id: str
     quantity: float

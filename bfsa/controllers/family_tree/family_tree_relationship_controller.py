@@ -24,6 +24,7 @@ class FamilyTreeRelationshipModel(BaseModel):
     """
     Pydantic model for family-tree relationship
     """
+
     person_one: str
     person_two: str
     relationship_type: str
@@ -52,7 +53,9 @@ def create_family_tree_relationship(
             [relationship_dict],
         )
         if not success:
-            log.critical(f"Failed to insert family-tree relationship. Check logs for details.")
+            log.critical(
+                f"Failed to insert family-tree relationship. Check logs for details."
+            )
             return return_json(
                 message="Failed to insert family-tree relationship.",
                 success=False,
@@ -104,7 +107,9 @@ def read_family_tree_relationships(
             success=False,
         )
 
-    log.critical(f"Failed to select family-tree relationship data. Check logs for details.")
+    log.critical(
+        f"Failed to select family-tree relationship data. Check logs for details."
+    )
     return return_json(
         message="Failed to select family-tree relationship data.",
         success=False,
@@ -128,12 +133,17 @@ def update_family_tree_relationship(
 
     try:
         success = client.update_data(
-            item={"id": family_tree_relationship_id, "partitionKey": "family-tree-relationship"},
+            item={
+                "id": family_tree_relationship_id,
+                "partitionKey": "family-tree-relationship",
+            },
             body=patch,
             upsert=False,
         )
         if not success:
-            log.critical(f"Failed to update family-tree relationship. Check logs for details.")
+            log.critical(
+                f"Failed to update family-tree relationship. Check logs for details."
+            )
             return return_json(
                 message="Failed to update family-tree relationship.",
                 success=False,
@@ -168,7 +178,9 @@ def delete_family_tree_relationship(
             partition_key="family-tree-relationship",
         )
         if not success:
-            log.critical(f"Failed to delete family-tree relationship. Check logs for details.")
+            log.critical(
+                f"Failed to delete family-tree relationship. Check logs for details."
+            )
             return return_json(
                 message="Failed to delete family-tree relationship.",
                 success=False,

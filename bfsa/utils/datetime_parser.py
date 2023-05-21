@@ -486,9 +486,7 @@ class DatetimeParser:
             and parsed_datetime_month_day_year is not None
             and parsed_datetime_day_month_year is not None
         ):
-            log.debug(
-                f"Both day-month-year and month-day-year formats are not None."
-            )
+            log.debug(f"Both day-month-year and month-day-year formats are not None.")
             if month_day_year_hint:
                 return parsed_datetime_month_day_year
             if day_month_year_hint:
@@ -505,9 +503,7 @@ class DatetimeParser:
             and parsed_datetime_month_day_year is None
             and parsed_datetime_day_month_year is not None
         ):
-            log.debug(
-                f"Both year-month-day and day-month-year formats are not None."
-            )
+            log.debug(f"Both year-month-day and day-month-year formats are not None.")
             if year_month_day_hint:
                 return parsed_datetime_year_month_day
             if day_month_year_hint:
@@ -524,9 +520,7 @@ class DatetimeParser:
             and parsed_datetime_month_day_year is not None
             and parsed_datetime_day_month_year is None
         ):
-            log.debug(
-                f"Both year-month-day and month-day-year formats are not None."
-            )
+            log.debug(f"Both year-month-day and month-day-year formats are not None.")
             if year_month_day_hint:
                 return parsed_datetime_year_month_day
             if month_day_year_hint:
@@ -574,9 +568,7 @@ class DatetimeParser:
             search_str,
         )
         if match is None:
-            log.debug(
-                f"No regex match on putative datetime string: {search_str}"
-            )
+            log.debug(f"No regex match on putative datetime string: {search_str}")
             return None
         else:
             log.debug(f"Match on putative datetime string: {search_str}")

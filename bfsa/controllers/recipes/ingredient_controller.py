@@ -26,6 +26,7 @@ class IngredientModel(BaseModel):
     """
     Pydantic model for ingredient
     """
+
     name: str
     description: str
 
@@ -89,7 +90,8 @@ def put_ingredient_image(
     if (
         image
         and "." in image.filename
-        and image.filename.rsplit(".", 1)[1].lower() not in ["png", "bmp", "jpg", "jpeg"]
+        and image.filename.rsplit(".", 1)[1].lower()
+        not in ["png", "bmp", "jpg", "jpeg"]
     ):
         return return_json(
             "Invalid image file.",
@@ -126,7 +128,10 @@ def put_ingredient_image(
         content = response["content"]
         if content:
             ingredient_dict = content[0]
-            if "blob_url" in ingredient_dict.keys() and ingredient_dict["blob_url"] == blob_url:
+            if (
+                "blob_url" in ingredient_dict.keys()
+                and ingredient_dict["blob_url"] == blob_url
+            ):
                 return return_json(
                     message="Successfully updated ingredient image.",
                     success=True,
@@ -141,7 +146,9 @@ def put_ingredient_image(
                     upsert=False,
                 )
                 if not cosmos_success:
-                    log.critical(f"Failed to insert ingredient image. Check logs for details.")
+                    log.critical(
+                        f"Failed to insert ingredient image. Check logs for details."
+                    )
 
             except Exception as e:
                 cosmos_success = False
@@ -166,7 +173,9 @@ def put_ingredient_image(
             success=False,
         )
     except Exception as e:
-        log.critical(f"Failed to insert ingredient image. Check blob storage for orphaned blobs. Error: {e}")
+        log.critical(
+            f"Failed to insert ingredient image. Check blob storage for orphaned blobs. Error: {e}"
+        )
         return return_json(
             message="Failed to insert ingredient image.",
             success=False,

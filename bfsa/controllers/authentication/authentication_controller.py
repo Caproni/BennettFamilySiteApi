@@ -22,6 +22,7 @@ class AuthenticationModel(BaseModel):
     """
     Pydantic model for authentication
     """
+
     username: str
     password: str
 
@@ -42,7 +43,11 @@ def authenticate(
         production=environment["IS_PROD"],
     )
 
-    if authentication.username == "admin" and secret is not None and authentication.password == secret:
+    if (
+        authentication.username == "admin"
+        and secret is not None
+        and authentication.password == secret
+    ):
         return return_json(
             message="Successfully authenticated.",
             success=True,
