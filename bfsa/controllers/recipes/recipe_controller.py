@@ -115,7 +115,7 @@ def put_recipe_image(
     try:
         blob_url = upload_blob(
             connection=blob_credentials["credentials"],
-            container="recipe-content",
+            container="recipe-photos",
             guid=recipe_id,
             file=image,
             overwrite=True,
@@ -185,7 +185,7 @@ def put_recipe_image(
         )
 
 
-@router.get("/api/deleteRecipeImage")
+@router.delete("/api/deleteRecipeImage")
 def delete_recipe_image(
     recipe_id: str,
 ):
@@ -194,12 +194,46 @@ def delete_recipe_image(
     blob_credentials = get_blob_credentials()
 
     try:
-        success = delete_blob(
-            connection=blob_credentials["credentials"],
-            container="recipe-content",
-            url="",
+        recipe_details = read_recipes(
+            where={"id": recipe_id},
+        )
+    except Exception as e:
+        log.critical(f"Failed to read recipe. Error: {e}")
+        return return_json(
+            message="Failed to read recipe.",
+            success=False,
         )
 
+    try:
+        blob_delete_success = delete_blob(
+            connection=blob_credentials["credentials"],
+            container="recipe-photos",
+            url=recipe_details["content"][0]["blob_url"],
+        )
+
+        if not blob_delete_success:
+            log.critical(f"Failed to delete recipe image.")
+            return return_json(
+                message="Failed to delete recipe image.",
+                success=False,
+            )
+
+    except Exception as e:
+        log.critical(f"Failed to delete recipe image. Error: {e}")
+        return return_json(
+            message="Failed to delete recipe image.",
+            success=False,
+        )
+
+    # blob deleted, now delete URL to blob from cosmos
+
+    recipe_details.update({"blob_url": None})
+
+    try:
+        update_recipe(
+            recipe_id,
+            recipe_details,
+        )
     except Exception as e:
         log.critical(f"Failed to delete recipe image. Error: {e}")
         return return_json(
