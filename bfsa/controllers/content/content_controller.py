@@ -7,6 +7,7 @@ Created on 2022-07-16
 """
 
 from typing import Dict, Any, Optional
+from io import BytesIO
 from fastapi import APIRouter, UploadFile, File
 
 from bfsa.db.environment import client_factory
@@ -85,7 +86,8 @@ def create_content(
             connection=blob_credentials["credentials"],
             container="media",
             guid=guid,
-            file=file,
+            filename=file.filename,
+            file=BytesIO(await file.read()),
             overwrite=False,
         )
 
