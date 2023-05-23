@@ -35,7 +35,7 @@ environment = Base()
 
 
 @router.post("/api/createContent")
-def create_content(
+async def create_content(
     name: str,
     file_format: str,
     file: UploadFile = File(...),
