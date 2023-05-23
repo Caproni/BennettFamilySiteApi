@@ -7,6 +7,7 @@ Created on 2022-07-16
 """
 
 from typing import Dict, Any
+from io import BytesIO
 from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
 
@@ -70,7 +71,7 @@ def create_ingredient(
 
 
 @router.put("/api/putIngredientImage")
-def put_ingredient_image(
+async def put_ingredient_image(
     ingredient_id: str,
     image: UploadFile = File(...),
 ):
@@ -111,7 +112,8 @@ def put_ingredient_image(
             connection=blob_credentials["credentials"],
             container="recipe-photos",
             guid=ingredient_id,
-            file=image,
+            filename=image.filename,
+            file=BytesIO(await image.read()),
             overwrite=True,
         )
 
