@@ -60,7 +60,9 @@ def delete_blob(
             container=container,
         )
         client.get_container_properties()  # get properties of the container to force exception to be thrown if container does not exist
-        client.get_blob_client(url.replace(client.primary_endpoint + "/", "")).delete_blob()
+        client.get_blob_client(
+            url.replace(client.primary_endpoint + "/", "")
+        ).delete_blob()
         return True
     except Exception as e:
         log.critical(f"Failed to delete blob from storage. Error: {e}")

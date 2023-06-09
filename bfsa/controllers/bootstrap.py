@@ -31,6 +31,8 @@ from bfsa.controllers.recipes import (
 )
 from bfsa.controllers.movie_database import movie_database_controller
 
+from bfsa.controllers.blog import blog_controller
+
 
 port = 4646
 host = "localhost"
@@ -65,6 +67,8 @@ server.include_router(ingredient_usage_controller.router, tags=["Ingredient Usag
 server.include_router(equipment_controller.router, tags=["Equipment"])
 server.include_router(equipment_usage_controller.router, tags=["Equipment Usage"])
 server.include_router(recipe_detail_controller.router, tags=["Recipe Details"])
+
+server.include_router(blog_controller.router, tags=["Blog"])
 
 origins = [
     "http://localhost",
