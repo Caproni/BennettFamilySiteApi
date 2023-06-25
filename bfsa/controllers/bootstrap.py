@@ -74,6 +74,7 @@ origins = [
     "http://localhost",
     "https://localhost:443",
     "http://localhost:4200",
+    "http://127.0.0.1:4200",
 ]
 
 server.add_middleware(
